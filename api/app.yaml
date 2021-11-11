@@ -1,0 +1,12 @@
+runtime: python38
+
+handlers:
+  - url: /
+    static_files: build/index.html
+    upload: build/index.html
+  - url: /static
+    static_dir: build/static/
+  - url: /(.*)
+    script: auto
+
+entrypoint: gunicorn -b :8080 -w 2 main:app
