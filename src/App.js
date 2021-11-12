@@ -22,6 +22,7 @@ function App() {
       <header className="App-header">
         Testing with the backend....
         <p>The current time is {currentTime}.</p>
+        Hello this a good test.
         <button onClick={refreshTime}>Refresh the time!</button>
       </header>
     </div>
