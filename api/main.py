@@ -21,7 +21,7 @@ app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     REMEMBER_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="Strict",
-    SQLALCHEMY_DATABASE_URI='sqlite:///tmp/test.db'
+    SQLALCHEMY_DATABASE_URI='mysql+pymysql://root:ZaidBen123@localhost:3306/imagehosting-331720:europe-west1:image-sharing-db'
 )
 
 cors = CORS(app)
