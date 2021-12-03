@@ -7,3 +7,6 @@ MarkupSafe==2.0.1
 python-dotenv==0.19.2
 Werkzeug==2.0.2
 gunicorn==19.9.0
+Flask-SQLAlchemy==2.5.1
+google-auth
+flask-cors
