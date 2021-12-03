@@ -1,31 +1,36 @@
-import React, { useState, useEffect } from "react";
-import logo from "./logo.svg";
 import "./App.css";
+import { useContext, useEffect } from "react";
+import { UserContext } from "./utils/UserProvider";
+import { Route, Routes, BrowserRouter as Router } from "react-router-dom";
+import Home from "./pages/Home";
+import Profile from "./pages/Profile";
+import LoggedInHome from "./pages/LoggedInHome";
+import RequireAuth from "./components/RequireAuth";
+import NotAuthenticated from "./pages/NotAuthenticated";
 
 function App() {
-  const [currentTime, setCurrentTime] = useState(0);
+  const { loadUser } = useContext(UserContext);
 
   useEffect(() => {
-    refreshTime();
+    loadUser();
   }, []);
 
-  const refreshTime = () => {
-    fetch("/time")
-      .then((res) => res.json())
-      .then((data) => {
-        setCurrentTime(data.time);
-      });
-  };
-
   return (
-    <div className="App">
-      <header className="App-header">
-        Testing with the backend....
-        <p>The current time is {currentTime}.</p>
-        Hello this a good test.
-        <button onClick={refreshTime}>Refresh the time!</button>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        {/*Homepage, different depnding on whether user is authenticated*/}
+        <Route path="/" element={<Home />} />{" "}
+        {/*Profile - user has to be authenticated*/}
+        <Route
+          path="/profile"
+          element={
+            <RequireAuth>
+              <Profile />
+            </RequireAuth>
+          }
+        />{" "}
+      </Routes>
+    </Router>
   );
 }
 

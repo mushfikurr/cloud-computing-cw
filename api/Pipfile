@@ -6,6 +6,19 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-flask = "*"
-python-dotenv = "*"
-
+python-dotenv = "==0.19.2"
+click = "==8.0.3"
+colorama = "==0.4.4"
+itsdangerous = "==2.0.1"
+gunicorn = "==19.9.0"
+Flask = "==2.0.2"
+Jinja2 = "==3.0.3"
+MarkupSafe = "==2.0.1"
+Werkzeug = "==2.0.2"
+flask-jwt-router = "==0.2.1"
+Flask-SQLAlchemy = "==2.5.1"
+flask-restx = "*"
+Flask-Login = "*"
+google-auth = "*"
+CacheControl = "*"
+Flask-Cors = "*"
