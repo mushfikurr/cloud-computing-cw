@@ -10,8 +10,6 @@ import { Toolbar, Typography, ImageList, ImageListItem, ImageListItemBar, IconBu
 import InfoIcon from '@mui/icons-material/Info';
 import logo from "../logo.png";
 
-import Flippy, { FrontSide, BackSide } from "react-flippy";
-
 const renderAppBar = () => {
   return (
     <>
