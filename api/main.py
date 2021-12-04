@@ -157,7 +157,8 @@ def login():
                 print(user_query, " logged in (new acct created)")
                 return {'login': 'True'}
     except ValueError as e:
-        return {'login': 'False', 'error': e}
+        print (e)
+        return {'login': 'False' }
 
 
 @app.route("/api/data", methods=["GET"])

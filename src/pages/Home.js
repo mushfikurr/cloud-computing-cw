@@ -3,18 +3,13 @@ import { useContext } from "react";
 import GoogleLogin from "react-google-login";
 import RecentPosts from "../components/RecentPosts";
 import { AppBarAuthed } from "../components/AppBar";
-import {
-  Box,
-  Toolbar,
-  Typography,
-  AppBar,
-  Button,
-  Container,
-} from "@mui/material";
+import NavBar from "../components/NavBar";
+import { Box, Toolbar, Typography, AppBar, Button } from "@mui/material";
 
 export default function Home() {
   const { isAuthenticated, login } = useContext(UserContext);
   const onSuccess = (response) => {
+    console.log(response.tokenId);
     login(response.tokenId);
   };
 
@@ -25,6 +20,7 @@ export default function Home() {
   return isAuthenticated() ? (
     <>
       <AppBarAuthed />
+      <NavBar />
       <RecentPosts />
     </>
   ) : (
