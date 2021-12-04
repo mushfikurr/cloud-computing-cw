@@ -7,6 +7,7 @@ import Profile from "./pages/Profile";
 import LoggedInHome from "./pages/LoggedInHome";
 import RequireAuth from "./components/RequireAuth";
 import NotAuthenticated from "./pages/NotAuthenticated";
+import HomeRevamped from "./pages/HomeRevamped";
 
 function App() {
   const { loadUser } = useContext(UserContext);
@@ -19,7 +20,7 @@ function App() {
     <Router>
       <Routes>
         {/*Homepage, different depnding on whether user is authenticated*/}
-        <Route path="/" element={<Home />} />{" "}
+        <Route path="/" element={<HomeRevamped />} />{" "}
         {/*Profile - user has to be authenticated*/}
         <Route
           path="/profile"

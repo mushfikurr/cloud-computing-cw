@@ -2,6 +2,7 @@ from flask.sessions import SecureCookieSessionInterface
 from flask import g
 from flask import Flask, jsonify, render_template, request
 from flask_sqlalchemy import SQLAlchemy
+import os
 from flask_login import (
     LoginManager,
     UserMixin,
@@ -21,7 +22,7 @@ app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     REMEMBER_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="Strict",
-    SQLALCHEMY_DATABASE_URI='mysql+pymysql://root:ZaidBen123@localhost:3306/imagehosting-331720:europe-west1:image-sharing-db'
+    SQLALCHEMY_DATABASE_URI=os.environ.get('GCLOUDURI')
 )
 
 cors = CORS(app)
@@ -48,13 +49,50 @@ app.session_interface = CustomSessionInterface()
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     sub = db.Column(db.Integer, unique=True)
-    email = db.Column(db.String, unique=True)
-    picture = db.Column(db.String, nullable=True)
-    given_name = db.Column(db.String)
-    family_name = db.Column(db.String)
+    email = db.Column(db.String(80), unique=True)
+    picture = db.Column(db.String(80), nullable=True)
+    given_name = db.Column(db.String(80))
+    family_name = db.Column(db.String(80))
 
     def __repr__(self):
         return f'User ({self.id} {self.sub})'
+
+
+# class Author(db.Model):
+#     author_id = db.Column(db.Integer, primary_key=True)
+#     author_image = db.relationship('image', backref='author', lazy=True)
+#     author_album = db.relationship('album', backref='author', lazy=True)
+
+#     def __repr__(self):
+#         return '<AuthorID {}>'.format(self.authorID)
+
+
+# class Image(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     author_id = db.Column(db.Integer, db.ForeignKey(
+#         'author.authorID'), nullable=False)
+#     album_id = db.Column(db.Integer, db.ForeignKey(
+#         'album.albumID'), nullable=False)
+#     date_uploaded = db.Column(db.DateTime, nullable=False)
+#     caption = db.Column(db.String(150))
+#     image_album = db.relationship('album', backref='image', lazy=True)
+
+#     def __repr__(self):
+#         return '<ImageID {}>'.format(self.id)
+
+
+# class Album(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     image_id = db.Column(db.Integer, db.ForeignKey(
+#         'image.imageID'), nullable=False)
+#     author_id = db.Column(db.Integer, db.ForeignKey(
+#         'author.authorID'), nullable=False)
+#     title = db.Column(db.String(50))
+#     date_created = db.Column(db.DateTime, nullable=False)
+#     album_image = db.relationship('image', backref='album', lazy=True)
+
+#     def __repr__(self):
+#         return '<AlbumID {}>'.format(self.id)
 
 
 def get_user(sub: int):

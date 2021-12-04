@@ -4,13 +4,19 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { UserProvider } from "./utils/UserProvider";
+import { ThemeProvider } from "@emotion/react";
+import { createTheme } from "@mui/material";
+
+const theme = createTheme();
 
 ReactDOM.render(
-  <React.StrictMode>
-    <UserProvider>
-      <App />
-    </UserProvider>
-  </React.StrictMode>,
+  <ThemeProvider theme={theme}>
+    <React.StrictMode>
+      <UserProvider>
+        <App />
+      </UserProvider>
+    </React.StrictMode>
+  </ThemeProvider>,
   document.getElementById("root")
 );
 
