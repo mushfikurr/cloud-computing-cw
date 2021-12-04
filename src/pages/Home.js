@@ -3,7 +3,7 @@ import { useContext } from "react";
 import GoogleLogin from "react-google-login";
 import RecentPosts from "../components/RecentPosts";
 import { AppBarAuthed } from "../components/AppBar";
-import NavBar from "../components/NavBar"
+import NavBar from "../components/NavBar";
 import { Box, Toolbar, Typography, AppBar, Button } from "@mui/material";
 
 export default function Home() {
@@ -25,34 +25,19 @@ export default function Home() {
     </>
   ) : (
     <>
-      <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="fixed">
-          <Toolbar>
-            <Typography
-              variant="h6"
-              align="left"
-              component="div"
-              sx={{ flexGrow: 1 }}
-            >
-              Crisp
-            </Typography>
-            <GoogleLogin
-              clientId="1084294817544-vcbqovejip9q2drlfaoke9kr6je0akqj.apps.googleusercontent.com"
-              render={(renderProps) => (
-                <Button color="warning" onClick={renderProps.onClick}>
-                  Login
-                </Button>
-              )}
-              buttonText="Login"
-              onSuccess={onSuccess}
-              onFailure={onFailure}
-              cookiePolicy={"single_host_origin"}
-            />
-          </Toolbar>
-        </AppBar>
-      </Box>
-
-      <h1>Home not authenticated</h1>
+      <h1>Not authenticated</h1>
+      <GoogleLogin
+        clientId="1084294817544-vcbqovejip9q2drlfaoke9kr6je0akqj.apps.googleusercontent.com"
+        render={(renderProps) => (
+          <Button color="warning" onClick={renderProps.onClick}>
+            Login
+          </Button>
+        )}
+        buttonText="Login"
+        onSuccess={onSuccess}
+        onFailure={onFailure}
+        cookiePolicy={"single_host_origin"}
+      />
     </>
   );
 }

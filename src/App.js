@@ -4,9 +4,7 @@ import { UserContext } from "./utils/UserProvider";
 import { Route, Routes, BrowserRouter as Router } from "react-router-dom";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
-import LoggedInHome from "./pages/LoggedInHome";
 import RequireAuth from "./components/RequireAuth";
-import NotAuthenticated from "./pages/NotAuthenticated";
 
 function App() {
   const { loadUser } = useContext(UserContext);
