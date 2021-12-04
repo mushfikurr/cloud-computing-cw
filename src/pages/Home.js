@@ -22,19 +22,6 @@ export default function Home() {
     console.log("Failure");
   };
 
-  // <GoogleLogin
-  //             clientId="1084294817544-vcbqovejip9q2drlfaoke9kr6je0akqj.apps.googleusercontent.com"
-  //             render={(renderProps) => (
-  //               <Button color="warning" onClick={renderProps.onClick}>
-  //                 Login
-  //               </Button>
-  //             )}
-  //             buttonText="Login"
-  //             onSuccess={onSuccess}
-  //             onFailure={onFailure}
-  //             cookiePolicy={"single_host_origin"}
-  //           />
-
   return isAuthenticated() ? (
     <>
       <AppBarAuthed />
@@ -42,7 +29,19 @@ export default function Home() {
     </>
   ) : (
     <>
-      
+      <h1>Not authenticated</h1>
+      <GoogleLogin
+        clientId="1084294817544-vcbqovejip9q2drlfaoke9kr6je0akqj.apps.googleusercontent.com"
+        render={(renderProps) => (
+          <Button color="warning" onClick={renderProps.onClick}>
+            Login
+          </Button>
+        )}
+        buttonText="Login"
+        onSuccess={onSuccess}
+        onFailure={onFailure}
+        cookiePolicy={"single_host_origin"}
+      />
     </>
   );
 }

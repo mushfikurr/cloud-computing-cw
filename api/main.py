@@ -47,6 +47,7 @@ app.session_interface = CustomSessionInterface()
 
 
 class User(db.Model, UserMixin):
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     sub = db.Column(db.Integer, unique=True)
     email = db.Column(db.String(80), unique=True)
@@ -54,45 +55,39 @@ class User(db.Model, UserMixin):
     given_name = db.Column(db.String(80))
     family_name = db.Column(db.String(80))
 
+    user_image = db.relationship("Image", primaryjoin="User.id==Image.user_id")
+    user_album = db.relationship("Album", primaryjoin="User.id==Album.user_id")
+
     def __repr__(self):
         return f'User ({self.id} {self.sub})'
 
 
-# class Author(db.Model):
-#     author_id = db.Column(db.Integer, primary_key=True)
-#     author_image = db.relationship('image', backref='author', lazy=True)
-#     author_album = db.relationship('album', backref='author', lazy=True)
+class Image(db.Model):
+    __tablename__ = 'image'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    album_id = db.Column(db.Integer, db.ForeignKey('album.id'), nullable=False)
+    date_uploaded = db.Column(db.DateTime, nullable=False)
+    caption = db.Column(db.String(150))
+    image_album = db.relationship(
+        "Album", primaryjoin="Image.id==Album.image_id")
 
-#     def __repr__(self):
-#         return '<AuthorID {}>'.format(self.authorID)
-
-
-# class Image(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     author_id = db.Column(db.Integer, db.ForeignKey(
-#         'author.authorID'), nullable=False)
-#     album_id = db.Column(db.Integer, db.ForeignKey(
-#         'album.albumID'), nullable=False)
-#     date_uploaded = db.Column(db.DateTime, nullable=False)
-#     caption = db.Column(db.String(150))
-#     image_album = db.relationship('album', backref='image', lazy=True)
-
-#     def __repr__(self):
-#         return '<ImageID {}>'.format(self.id)
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
 
 
-# class Album(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     image_id = db.Column(db.Integer, db.ForeignKey(
-#         'image.imageID'), nullable=False)
-#     author_id = db.Column(db.Integer, db.ForeignKey(
-#         'author.authorID'), nullable=False)
-#     title = db.Column(db.String(50))
-#     date_created = db.Column(db.DateTime, nullable=False)
-#     album_image = db.relationship('image', backref='album', lazy=True)
+class Album(db.Model):
+    __tablename__ = 'album'
+    id = db.Column(db.Integer, primary_key=True)
+    image_id = db.Column(db.Integer, db.ForeignKey('image.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    title = db.Column(db.String(50))
+    date_created = db.Column(db.DateTime, nullable=False)
+    album_image = db.relationship(
+        "Image", primaryjoin="Album.id==Image.album_id")
 
-#     def __repr__(self):
-#         return '<AlbumID {}>'.format(self.id)
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
 
 
 def get_user(sub: int):
