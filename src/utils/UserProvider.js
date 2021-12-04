@@ -12,6 +12,7 @@ const UserProvider = ({ children }) => {
     givenName: "",
     familyName: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     console.log(isAuthenticated());
@@ -28,10 +29,12 @@ const UserProvider = ({ children }) => {
       },
       data: data,
     };
+    setIsLoading(true);
 
     axios(config)
       .then(function (response) {
         loadUser();
+        setIsLoading(false);
       })
       .catch(function (error) {
         console.log(error);
@@ -47,9 +50,11 @@ const UserProvider = ({ children }) => {
       },
     };
 
+    setIsLoading(true);
     axios(config)
       .then(function (response) {
         setCurrentUser({});
+        setIsLoading(false);
       })
       .catch(function (error) {
         console.log(error);
@@ -91,7 +96,14 @@ const UserProvider = ({ children }) => {
 
   return (
     <UserContext.Provider
-      value={{ currentUser, isAuthenticated, loadUser, login, logout }}
+      value={{
+        currentUser,
+        isAuthenticated,
+        isLoading,
+        loadUser,
+        login,
+        logout,
+      }}
     >
       {children}
     </UserContext.Provider>

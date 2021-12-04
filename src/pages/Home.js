@@ -1,43 +1,49 @@
 import { UserContext } from "../utils/UserProvider";
 import { useContext } from "react";
-import GoogleLogin from "react-google-login";
 import RecentPosts from "../components/RecentPosts";
-import { AppBarAuthed } from "../components/AppBar";
+import { UserAppBar } from "../components/AppBar";
 import NavBar from "../components/NavBar";
-import { Box, Toolbar, Typography, AppBar, Button } from "@mui/material";
+import {
+  Typography,
+  Container,
+  Backdrop,
+  CircularProgress,
+} from "@mui/material";
 
 export default function Home() {
-  const { isAuthenticated, login } = useContext(UserContext);
-  const onSuccess = (response) => {
-    console.log(response.tokenId);
-    login(response.tokenId);
-  };
-
-  const onFailure = (response) => {
-    console.log("Failure");
-  };
+  const { isAuthenticated, currentUser, isLoading } = useContext(UserContext);
 
   return isAuthenticated() ? (
     <>
-      <AppBarAuthed />
+      {/* This is logged in */}
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 2 }}
+        open={isLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+      <UserAppBar />
       <NavBar />
-      <RecentPosts />
+      <Container>
+        <Typography variant="h4">Hi {currentUser.givenName}</Typography>
+        <Typography variant="subtitle2">Your Crisp feed</Typography>
+        <RecentPosts />
+      </Container>
     </>
   ) : (
     <>
-      <h1>Not authenticated</h1>
-      <GoogleLogin
-        clientId="1084294817544-vcbqovejip9q2drlfaoke9kr6je0akqj.apps.googleusercontent.com"
-        render={(renderProps) => (
-          <Button color="warning" onClick={renderProps.onClick}>
-            Login
-          </Button>
-        )}
-        buttonText="Login"
-        onSuccess={onSuccess}
-        onFailure={onFailure}
-        cookiePolicy={"single_host_origin"}
-      />
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 2 }}
+        open={isLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+      {/* This is not logged in */}
+      <UserAppBar />
+      <Container>
+        <Typography variant="h4">Recent Crisp feed</Typography>
+        <RecentPosts />
+      </Container>
     </>
   );
 }

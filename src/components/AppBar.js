@@ -10,14 +10,62 @@ import {
   AppBar,
   Button,
 } from "@mui/material";
+import GoogleLogin from "react-google-login";
 
-export const AppBarAuthed = () => {
-  const { currentUser, logout } = useContext(UserContext);
+const renderRightSide = (props) => {
+  const onSuccess = (response) => {
+    props.login(response.tokenId);
+  };
+
+  const onFailure = (response) => {
+    console.log(response);
+  };
+
+  return props.isAuthenticated() ? (
+    <>
+      <Button
+        variant="warning"
+        onClick={() => {
+          props.logout();
+        }}
+      >
+        Logout
+      </Button>
+      <Tooltip title="Open settings">
+        <IconButton>
+          <Avatar alt={props.fullName} src={props.picture} />
+        </IconButton>
+      </Tooltip>
+    </>
+  ) : (
+    <GoogleLogin
+      clientId="1084294817544-vcbqovejip9q2drlfaoke9kr6je0akqj.apps.googleusercontent.com"
+      render={(renderProps) => (
+        <Button variant="warning" onClick={renderProps.onClick}>
+          Login
+        </Button>
+      )}
+      buttonText="Login"
+      onSuccess={onSuccess}
+      onFailure={onFailure}
+      cookiePolicy={"single_host_origin"}
+    />
+  );
+};
+
+export const UserAppBar = () => {
+  const { currentUser, login, logout, isAuthenticated } =
+    useContext(UserContext);
   let fullName = currentUser.givenName + " " + currentUser.familyName;
   return (
     <>
-      <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1}}>
+      <Box sx={{ flexGrow: 1, paddingBottom: 8 * 10 + "px" }}>
+        <AppBar
+          position="fixed"
+          sx={{
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+          }}
+        >
           <Toolbar>
             <Typography
               variant="h6"
@@ -28,19 +76,13 @@ export const AppBarAuthed = () => {
               Crisp
             </Typography>
             <Box style={{ flexGrow: 0 }}>
-              <Button
-                variant="warning"
-                onClick={() => {
-                  logout();
-                }}
-              >
-                Logout
-              </Button>
-              <Tooltip title="Open settings">
-                <IconButton sx={{ p: 1 }}>
-                  <Avatar alt={fullName} src={currentUser.picture} />
-                </IconButton>
-              </Tooltip>
+              {renderRightSide({
+                login,
+                logout,
+                fullName,
+                picture: currentUser.picture,
+                isAuthenticated,
+              })}
             </Box>
           </Toolbar>
         </AppBar>

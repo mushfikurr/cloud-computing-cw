@@ -10,11 +10,12 @@ import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import { AppBarAuthed } from "../components/AppBar";
+import { UserAppBar } from "../components/AppBar";
 import PersonIcon from "@mui/icons-material/Person";
 import UploadIcon from "@mui/icons-material/Upload";
 import CollectionsIcon from "@mui/icons-material/Collections";
 import InboxIcon from "@mui/icons-material/Inbox";
+import { Slide } from "@mui/material";
 
 const drawerWidth = 240;
 const menuItems = [
@@ -29,7 +30,7 @@ export default function NavBar() {
     <>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        <AppBarAuthed />
+
         <Drawer
           variant="permanent"
           sx={{

@@ -1,3 +1,9 @@
+import { UserAppBar } from "../components/AppBar";
+import NavBar from "../components/NavBar";
+
 export default function Profile() {
-  return <h1>I'm at my profile now</h1>;
+  <>
+    <UserAppBar />
+    <NavBar />
+  </>;
 }
