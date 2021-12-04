@@ -2,6 +2,7 @@ from flask.sessions import SecureCookieSessionInterface
 from flask import g
 from flask import Flask, jsonify, render_template, request
 from flask_sqlalchemy import SQLAlchemy
+import os
 from flask_login import (
     LoginManager,
     UserMixin,
@@ -21,7 +22,7 @@ app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     REMEMBER_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="Strict",
-    SQLALCHEMY_DATABASE_URI='mysql+pymysql://root:ZaidBen123@localhost:3306/imagehosting-331720:europe-west1:image-sharing-db'
+    SQLALCHEMY_DATABASE_URI= os.environ.get("GCLOUDURI")
 )
 
 cors = CORS(app)
@@ -124,7 +125,8 @@ def login():
                 print(user_query, " logged in (new acct created)")
                 return {'login': 'True'}
     except ValueError as e:
-        return {'login': 'False', 'error': e}
+        print (e)
+        return {'login': 'False' }
 
 
 @app.route("/api/data", methods=["GET"])
