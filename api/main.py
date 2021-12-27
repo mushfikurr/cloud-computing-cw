@@ -111,15 +111,6 @@ def load_user(id):
     return User.query.filter_by(id=id).first()
 
 
-# @login_manager.request_loader
-# def load_user(request):
-#     token = request.headers.get('Authorization')
-#     if token is not None:
-#         return attempt_token_verification()
-#     else:
-#         return None
-
-
 def attempt_token_verification():
     try:
         token = request.headers.get('Authorization')
@@ -193,6 +184,7 @@ IMAGE_MIME_TYPES = {
 def upload_image():
     """Process the uploaded file and upload it to Google Cloud Storage."""
     uploaded_file = request.files.get('image')
+    uploaded_caption = request.form.get('caption')
 
     if not uploaded_file:
         return 'No file uploaded.', 400
@@ -216,19 +208,21 @@ def upload_image():
     blob.make_public()
 
     new_image = Image(user_id=current_user.id,
-                      date_uploaded=datetime.datetime.now(), image=blob.public_url, caption="")
+                      date_uploaded=datetime.datetime.now(), image=blob.public_url, caption=uploaded_caption)
     db.session.add(new_image)
     db.session.commit()
     return {"success": "Successfully uploaded image"}
 
 
 @app.route("/api/image/recent")
-@login_required
 def recent_images():
     from sqlalchemy import desc
     query = Image.query.order_by(desc(Image.date_uploaded)).limit(10).all()
+
+    def full_name(user): return user.given_name + " " + user.family_name
+
     if query:
-        return {"data": [img.as_dict() for img in query]}
+        return {"images": [{**img.as_dict(), **{"user_full_name": full_name(User.query.filter_by(id=img.user_id).first())}} for img in query]}
     else:
         return {"error": ""}
 

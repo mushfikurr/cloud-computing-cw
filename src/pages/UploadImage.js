@@ -7,6 +7,7 @@ import {
   ButtonGroup,
   Typography,
   Box,
+  TextField,
 } from "@mui/material";
 import axios from "axios";
 
@@ -14,27 +15,34 @@ import { useState } from "react";
 import { useSnackbar } from "notistack";
 
 const ImageUpload = () => {
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
   const [currentFile, setCurrentFile] = useState();
+  const [currentCaption, setCurrentCaption] = useState();
   const handleChange = (e) => {
     setCurrentFile(e.target.files[0]);
   };
 
   const onSuccess = () => {
     setCurrentFile();
-    enqueueSnackbar("Success", { persist: true });
+    setCurrentCaption();
+    enqueueSnackbar("Image uploaded successfully!", {
+      autoHideDuration: 1500,
+      resumeHideDuration: 0,
+      variant: "Success",
+    });
   };
 
   const uploadFile = () => {
     var formData = new FormData();
     formData.append("image", currentFile);
-    formData.append("caption", "");
+    formData.append("caption", currentCaption);
     axios({
       method: "post",
       url: "/api/image/new",
       data: formData,
     })
       .then(function (response) {
+        console.log(response.data);
         onSuccess();
       })
       .catch(function (response) {
@@ -52,6 +60,16 @@ const ImageUpload = () => {
         <>
           <Box style={{ margin: "8px" }}>
             <img src={URL.createObjectURL(currentFile)} />
+            <Box sx={{ paddingBottom: "16px" }}>
+              <TextField
+                id="input-caption"
+                label="Image caption"
+                variant="standard"
+                onChange={(e) => {
+                  setCurrentCaption(e.target.value);
+                }}
+              />
+            </Box>
             <Box>
               <Input
                 accept="image/*"

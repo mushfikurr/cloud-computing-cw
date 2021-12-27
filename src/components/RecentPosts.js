@@ -9,45 +9,6 @@ import { Info } from "@mui/icons-material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-const randomImages = [
-  {
-    url: "https://picsum.photos/500/500",
-    description: "Image Description",
-    title: "Image Test",
-    author: "Zaid Ashraf",
-  },
-  {
-    url: "https://picsum.photos/500/500",
-    description: "Image Description",
-    title: "Image Test",
-    author: "Zaid Ashraf",
-  },
-  {
-    url: "https://picsum.photos/500/500",
-    description: "Image Description",
-    title: "Image Test",
-    author: "Zaid Ashraf",
-  },
-  {
-    url: "https://picsum.photos/500/500",
-    description: "Image Description",
-    title: "Image Test",
-    author: "Zaid Ashraf",
-  },
-  {
-    url: "https://picsum.photos/500/500",
-    description: "Image Description",
-    title: "Image Test",
-    author: "Zaid Ashraf",
-  },
-  {
-    url: "https://picsum.photos/500/500",
-    description: "Image Description",
-    title: "Image Test",
-    author: "Zaid Ashraf",
-  },
-];
-
 export default function RecentPosts() {
   const [currentImages, setCurrentImages] = useState([]);
 
@@ -62,7 +23,8 @@ export default function RecentPosts() {
 
     axios(config)
       .then(function (response) {
-        setCurrentImages(response.data.data);
+        setCurrentImages(response.data.images);
+        console.log(response.data.images);
       })
       .catch(function (error) {
         console.log(error);
@@ -80,6 +42,7 @@ export default function RecentPosts() {
           return (
             <Fade
               in={true}
+              key={image.id}
               style={{
                 transitionDelay: ((80 * index) ^ 2) + 50 + "ms",
               }}
@@ -88,15 +51,7 @@ export default function RecentPosts() {
                 <img src={image.image} alt={image.caption} loading="lazy" />
                 <ImageListItemBar
                   title={image.caption}
-                  subtitle={image.author}
-                  actionIcon={
-                    <IconButton
-                      sx={{ color: "rgba(255, 255, 255, 0.54)" }}
-                      aria-label={`info about ${image.caption}`}
-                    >
-                      <Info />
-                    </IconButton>
-                  }
+                  subtitle={image.user_full_name}
                 />
               </ImageListItem>
             </Fade>

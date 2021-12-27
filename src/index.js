@@ -14,7 +14,15 @@ ReactDOM.render(
   <ThemeProvider theme={theme}>
     <React.StrictMode>
       <UserProvider>
-        <SnackbarProvider maxSnack={3}>
+        <SnackbarProvider
+          maxSnack={3}
+          iconVariant={{
+            success: "✅",
+            error: "✖️",
+            warning: "⚠️",
+            info: "ℹ️",
+          }}
+        >
           <App />
         </SnackbarProvider>
       </UserProvider>
