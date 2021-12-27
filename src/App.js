@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import RequireAuth from "./components/RequireAuth";
 import UploadImage from "./pages/UploadImage";
+import CreateAlbum from "./pages/CreateAlbum";
 
 function App() {
   const { loadUser } = useContext(UserContext);
@@ -34,6 +35,14 @@ function App() {
           element={
             <RequireAuth>
               <UploadImage />
+            </RequireAuth>
+          }
+        />{" "}
+        <Route
+          path="/album"
+          element={
+            <RequireAuth>
+              <CreateAlbum />
             </RequireAuth>
           }
         />{" "}

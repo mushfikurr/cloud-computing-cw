@@ -24,7 +24,7 @@ const menuItems = [
   { title: "Home", icon: <HomeIcon />, link: "/" },
   { title: "Profile", icon: <PersonIcon />, link: "/profile" },
   { title: "Upload", icon: <UploadIcon />, link: "/upload" },
-  { title: "Create album", icon: <CollectionsIcon />, link: "/" },
+  { title: "Create album", icon: <CollectionsIcon />, link: "/album" },
   { title: "Shared with me", icon: <InboxIcon />, link: "/" },
 ];
 
