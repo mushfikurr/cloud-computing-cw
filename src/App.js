@@ -5,6 +5,7 @@ import { Route, Routes, BrowserRouter as Router } from "react-router-dom";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import RequireAuth from "./components/RequireAuth";
+import UploadImage from "./pages/UploadImage";
 
 function App() {
   const { loadUser } = useContext(UserContext);
@@ -24,6 +25,15 @@ function App() {
           element={
             <RequireAuth>
               <Profile />
+            </RequireAuth>
+          }
+        />{" "}
+        {/*Upload image page */}
+        <Route
+          path="/upload"
+          element={
+            <RequireAuth>
+              <UploadImage />
             </RequireAuth>
           }
         />{" "}

@@ -1,7 +1,4 @@
 import {
-  Grid,
-  Container,
-  Box,
   ImageList,
   ImageListItem,
   ImageListItemBar,
@@ -9,67 +6,93 @@ import {
   Fade,
 } from "@mui/material";
 import { Info } from "@mui/icons-material";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 const randomImages = [
   {
     url: "https://picsum.photos/500/500",
-    description: "hello",
-    title: "randomness",
-    author: "DEEZ NUTZ",
+    description: "Image Description",
+    title: "Image Test",
+    author: "Zaid Ashraf",
   },
   {
     url: "https://picsum.photos/500/500",
-    description: "hello",
-    title: "randomness",
-    author: "DEEZ NUTZ",
+    description: "Image Description",
+    title: "Image Test",
+    author: "Zaid Ashraf",
   },
   {
     url: "https://picsum.photos/500/500",
-    description: "hello",
-    title: "randomness",
-    author: "DEEZ NUTZ",
+    description: "Image Description",
+    title: "Image Test",
+    author: "Zaid Ashraf",
   },
   {
     url: "https://picsum.photos/500/500",
-    description: "hello",
-    title: "randomness",
-    author: "DEEZ NUTZ",
+    description: "Image Description",
+    title: "Image Test",
+    author: "Zaid Ashraf",
   },
   {
     url: "https://picsum.photos/500/500",
-    description: "hello",
-    title: "randomness",
-    author: "DEEZ NUTZ",
+    description: "Image Description",
+    title: "Image Test",
+    author: "Zaid Ashraf",
   },
   {
     url: "https://picsum.photos/500/500",
-    description: "hello",
-    title: "randomness",
-    author: "DEEZ NUTZ",
+    description: "Image Description",
+    title: "Image Test",
+    author: "Zaid Ashraf",
   },
 ];
 
 export default function RecentPosts() {
+  const [currentImages, setCurrentImages] = useState([]);
+
+  const getRecentImages = () => {
+    var config = {
+      method: "get",
+      url: "/api/image/recent",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+      },
+    };
+
+    axios(config)
+      .then(function (response) {
+        setCurrentImages(response.data.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    getRecentImages();
+  }, []);
+
   return (
     <>
       <ImageList cols={3} gap={6}>
-        {randomImages.map((image, index) => {
+        {currentImages.map((image, index) => {
           return (
             <Fade
               in={true}
               style={{
-                transitionDelay: ((100 * index) ^ 2) + 50 + "ms",
+                transitionDelay: ((80 * index) ^ 2) + 50 + "ms",
               }}
             >
               <ImageListItem>
-                <img src={image.url} alt={image.description} loading="lazy" />
+                <img src={image.image} alt={image.caption} loading="lazy" />
                 <ImageListItemBar
-                  title={image.title}
+                  title={image.caption}
                   subtitle={image.author}
                   actionIcon={
                     <IconButton
                       sx={{ color: "rgba(255, 255, 255, 0.54)" }}
-                      aria-label={`info about ${image.title}`}
+                      aria-label={`info about ${image.caption}`}
                     >
                       <Info />
                     </IconButton>

@@ -15,17 +15,24 @@ import PersonIcon from "@mui/icons-material/Person";
 import UploadIcon from "@mui/icons-material/Upload";
 import CollectionsIcon from "@mui/icons-material/Collections";
 import InboxIcon from "@mui/icons-material/Inbox";
+import HomeIcon from "@mui/icons-material/Home";
 import { Slide } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
 const menuItems = [
-  { title: "Profile", icon: <PersonIcon /> },
-  { title: "Upload", icon: <UploadIcon /> },
-  { title: "Create album", icon: <CollectionsIcon /> },
-  { title: "Shared with me", icon: <InboxIcon /> },
+  { title: "Home", icon: <HomeIcon />, link: "/" },
+  { title: "Profile", icon: <PersonIcon />, link: "/profile" },
+  { title: "Upload", icon: <UploadIcon />, link: "/upload" },
+  { title: "Create album", icon: <CollectionsIcon />, link: "/" },
+  { title: "Shared with me", icon: <InboxIcon />, link: "/" },
 ];
 
 export default function NavBar() {
+  const history = useNavigate();
+  const handleRouteChange = (title) => {
+    history(title.link);
+  };
   return (
     <>
       <Box sx={{ display: "flex" }}>
@@ -47,7 +54,11 @@ export default function NavBar() {
             <List>
               {menuItems.map((text, index) => {
                 return (
-                  <ListItem button key={text.title}>
+                  <ListItem
+                    onClick={() => handleRouteChange(text)}
+                    button
+                    key={text.title}
+                  >
                     <ListItemIcon>{text.icon}</ListItemIcon>
                     <ListItemText primary={text.title} />
                   </ListItem>

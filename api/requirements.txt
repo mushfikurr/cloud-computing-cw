@@ -11,3 +11,5 @@ Flask-SQLAlchemy==2.5.1
 google-auth
 flask-cors
 PyMySQL
+google-cloud-storage
+boto3==1.17.87

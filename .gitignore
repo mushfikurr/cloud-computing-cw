@@ -13,6 +13,9 @@ __pycache__
 # testing
 /coverage
 
+# creds
+service_account.json
+
 # production
 /build
 

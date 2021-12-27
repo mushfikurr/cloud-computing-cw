@@ -2,7 +2,9 @@ from flask.sessions import SecureCookieSessionInterface
 from flask import g
 from flask import Flask, jsonify, render_template, request
 from flask_sqlalchemy import SQLAlchemy
+import uuid
 import os
+import datetime
 from flask_login import (
     LoginManager,
     UserMixin,
@@ -11,18 +13,21 @@ from flask_login import (
     login_user,
     logout_user,
 )
+# Move to GOOGLE CLOUD STORAGE PYTHON library
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from flask_cors import CORS
+from google.cloud import storage
+
 
 app = Flask(__name__, static_folder="build", static_url_path="/")
 app.config.update(
     DEBUG=True,
-    SECRET_KEY="secret_sauce",
+    SECRET_KEY=os.environ.get("FN_FLASK_SECRET_KEY"),
     SESSION_COOKIE_HTTPONLY=True,
     REMEMBER_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="Strict",
-    SQLALCHEMY_DATABASE_URI=os.environ.get('GCLOUDURI')
+    SQLALCHEMY_DATABASE_URI="mysql+pymysql://root:ZaidBen123@localhost:3306/image_sharing_db"
 )
 
 cors = CORS(app)
@@ -49,9 +54,9 @@ app.session_interface = CustomSessionInterface()
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    sub = db.Column(db.Integer, unique=True)
+    sub = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(80), unique=True)
-    picture = db.Column(db.String(80), nullable=True)
+    picture = db.Column(db.String(200), nullable=True)
     given_name = db.Column(db.String(80))
     family_name = db.Column(db.String(80))
 
@@ -69,11 +74,15 @@ class Image(db.Model):
     album_id = db.Column(db.Integer, db.ForeignKey('album.id'), nullable=False)
     date_uploaded = db.Column(db.DateTime, nullable=False)
     caption = db.Column(db.String(150))
+    image = db.Column(db.String(150))
     image_album = db.relationship(
         "Album", primaryjoin="Image.id==Album.image_id")
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
 class Album(db.Model):
@@ -157,8 +166,8 @@ def login():
                 print(user_query, " logged in (new acct created)")
                 return {'login': 'True'}
     except ValueError as e:
-        print (e)
-        return {'login': 'False' }
+        print(e)
+        return {'login': 'False'}
 
 
 @app.route("/api/data", methods=["GET"])
@@ -171,6 +180,57 @@ def user_data():
         "given_name": current_user.given_name,
         "family_name": current_user.family_name
     }
+
+
+IMAGE_MIME_TYPES = {
+    'image/jpeg',
+    'image/png'
+}
+
+
+@app.route('/api/image/new', methods=['POST'])
+@login_required
+def upload_image():
+    """Process the uploaded file and upload it to Google Cloud Storage."""
+    uploaded_file = request.files.get('image')
+
+    if not uploaded_file:
+        return 'No file uploaded.', 400
+
+    # Create a Cloud Storage client.
+    _, extension = os.path.splitext(uploaded_file.filename)
+    filename = str(uuid.uuid4()) + extension
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
+    gcs = storage.Client()
+
+    # Get the bucket that the file will be uploaded to.
+    bucket = gcs.get_bucket(os.environ.get("GOOGLE_CLOUD_STORAGE_BUCKET"))
+
+    # Create a new blob and upload the file's content.
+    blob = bucket.blob(filename)
+
+    blob.upload_from_string(
+        uploaded_file.read(),
+        content_type=uploaded_file.content_type
+    )
+    blob.make_public()
+
+    new_image = Image(user_id=current_user.id,
+                      date_uploaded=datetime.datetime.now(), image=blob.public_url, caption="")
+    db.session.add(new_image)
+    db.session.commit()
+    return {"success": "Successfully uploaded image"}
+
+
+@app.route("/api/image/recent")
+@login_required
+def recent_images():
+    from sqlalchemy import desc
+    query = Image.query.order_by(desc(Image.date_uploaded)).limit(10).all()
+    if query:
+        return {"data": [img.as_dict() for img in query]}
+    else:
+        return {"error": ""}
 
 
 @app.route("/api/logout")

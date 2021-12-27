@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, ReactDOM } from "react";
 import axios from "axios";
 
 const UserContext = createContext();
@@ -37,6 +37,7 @@ const UserProvider = ({ children }) => {
         setIsLoading(false);
       })
       .catch(function (error) {
+        setIsLoading(false);
         console.log(error);
       });
   };
@@ -57,7 +58,7 @@ const UserProvider = ({ children }) => {
         setIsLoading(false);
       })
       .catch(function (error) {
-        console.log(error);
+        setIsLoading(false);
       });
   };
 

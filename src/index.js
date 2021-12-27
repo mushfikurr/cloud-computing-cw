@@ -6,6 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import { UserProvider } from "./utils/UserProvider";
 import { ThemeProvider } from "@emotion/react";
 import { createTheme } from "@mui/material";
+import { SnackbarProvider } from "notistack";
 
 const theme = createTheme();
 
@@ -13,7 +14,9 @@ ReactDOM.render(
   <ThemeProvider theme={theme}>
     <React.StrictMode>
       <UserProvider>
-        <App />
+        <SnackbarProvider maxSnack={3}>
+          <App />
+        </SnackbarProvider>
       </UserProvider>
     </React.StrictMode>
   </ThemeProvider>,
