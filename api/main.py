@@ -227,6 +227,18 @@ def recent_images():
         return {"error": ""}
 
 
+@app.route("/api/image/user")
+@login_required
+def recent_images():
+    from sqlalchemy import desc
+    query = Image.query.filter_by(user_id=current_user.id).all()
+
+    if query:
+        return {"images": [img.as_dict() for img in query]}
+    else:
+        return {"error": ""}
+
+
 @app.route("/api/logout")
 @login_required
 def logout():
