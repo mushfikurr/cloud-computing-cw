@@ -10,7 +10,6 @@ import {
   TextField,
 } from "@mui/material";
 import axios from "axios";
-
 import { useState } from "react";
 import { useSnackbar } from "notistack";
 
@@ -79,7 +78,7 @@ const ImageUpload = () => {
                 style={{ display: "none" }}
                 onChange={handleChange}
               />
-              <ButtonGroup variant="contained">
+              <ButtonGroup variant="contained" aria-label="outlined primary button group">
                 <label htmlFor="contained-button-file">
                   <Button variant="contained" component="span">
                     Change

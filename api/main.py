@@ -229,7 +229,7 @@ def recent_images():
 
 @app.route("/api/image/user")
 @login_required
-def recent_images():
+def current_user_images():
     from sqlalchemy import desc
     query = Image.query.filter_by(user_id=current_user.id).all()
 
