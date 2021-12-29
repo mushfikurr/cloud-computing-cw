@@ -1,10 +1,12 @@
 import { createContext, useEffect, useState, ReactDOM } from "react";
 import axios from "axios";
+import { useSnackbar } from "notistack";
 
 const UserContext = createContext();
 const HOST_URL = "localhost:3000";
 
 const UserProvider = ({ children }) => {
+  const { enqueueSnackbar } = useSnackbar();
   const [currentUser, setCurrentUser] = useState({
     id: "",
     email: "",
@@ -35,10 +37,19 @@ const UserProvider = ({ children }) => {
       .then(function (response) {
         loadUser();
         setIsLoading(false);
+        enqueueSnackbar("Logged in successfully.", {
+          autoHideDuration: 1500,
+          resumeHideDuration: 0,
+          variant: 'Success',
+        });
       })
       .catch(function (error) {
         setIsLoading(false);
-        console.log(error);
+        enqueueSnackbar("Unable to login successfully.", {
+          autoHideDuration: 1500,
+          resumeHideDuration: 0,
+          variant: 'Error',
+        });
       });
   };
 
@@ -56,6 +67,11 @@ const UserProvider = ({ children }) => {
       .then(function (response) {
         setCurrentUser({});
         setIsLoading(false);
+        enqueueSnackbar("Logged out successfully.", {
+          autoHideDuration: 1500,
+          resumeHideDuration: 0,
+          variant: 'Success',
+        });
       })
       .catch(function (error) {
         setIsLoading(false);

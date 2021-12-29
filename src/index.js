@@ -13,8 +13,7 @@ const theme = createTheme();
 ReactDOM.render(
   <ThemeProvider theme={theme}>
     <React.StrictMode>
-      <UserProvider>
-        <SnackbarProvider
+      <SnackbarProvider
           maxSnack={3}
           iconVariant={{
             success: "✅",
@@ -23,9 +22,10 @@ ReactDOM.render(
             info: "ℹ️",
           }}
         >
+        <UserProvider>
           <App />
-        </SnackbarProvider>
-      </UserProvider>
+        </UserProvider>
+      </SnackbarProvider>
     </React.StrictMode>
   </ThemeProvider>,
   document.getElementById("root")

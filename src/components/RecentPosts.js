@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 
 export default function RecentPosts() {
   const [currentImages, setCurrentImages] = useState([]);
+  const publicUrl = "https://storage.googleapis.com/imagehosting-331720.appspot.com/"
 
   const getRecentImages = () => {
     var config = {
@@ -23,7 +24,13 @@ export default function RecentPosts() {
 
     axios(config)
       .then(function (response) {
-        setCurrentImages(response.data.images);
+        if (response.data) {
+          console.log(response.data.images);
+          setCurrentImages(response.data.images);
+        } else {
+          setCurrentImages([]);
+        }
+
         console.log(response.data.images);
       })
       .catch(function (error) {
@@ -48,9 +55,9 @@ export default function RecentPosts() {
               }}
             >
               <ImageListItem>
-                <img src={image.image} alt={image.caption} loading="lazy" />
+                <img src={publicUrl + image.image} alt={image.caption} loading="lazy" />
                 <ImageListItemBar
-                  title={image.caption}
+                  title={image.caption ? image.caption : ""}
                   subtitle={image.user_full_name}
                 />
               </ImageListItem>
