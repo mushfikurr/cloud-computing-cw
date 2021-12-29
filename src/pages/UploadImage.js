@@ -26,7 +26,7 @@ import { grey } from "@mui/material/colors";
 
 const ImageUploadDropzone = () => {
   const [currentFile, setCurrentFile] = useState();
-  const [currentCapton, setCurrentCaption] = useState();
+  const [currentCaption, setCurrentCaption] = useState();
 
   // const uploadFile = () => {  
   //   var formData = new FormData();
@@ -59,17 +59,26 @@ const ImageUploadDropzone = () => {
   }, [])
 
   const {getRootProps, getInputProps, isDragActive} = useDropzone({accept: 'image/jpeg, image/png', onDrop})
+
+  const renderDragMessage = () => {
+    if (isDragActive) {
+      return <Typography variant="h7">Drop your image here!</Typography> 
+    }else{
+      if (currentFile) {
+        return <Typography variant="h7">Drop another image here to change or click to browse.</Typography> 
+      }else{
+        return <Typography variant="h7">Drop image here or click to browse.</Typography>
+      }
+    }
+  }
+
   const renderDropzone = () => {
     return (
       <Box style={{height: "250px"}} sx={{ border: '1px dashed grey', backgroundColor: isDragActive ? grey[100] : "" }} {...getRootProps()}>
         <Grid container alignItems="center" justifyContent="center" style={{height: "100%"}}>
           <Grid item>
             <input {...getInputProps()} />
-              {
-                isDragActive ?
-                  <Typography variant="h7">Drop your file here!</Typography> :
-                  <Typography variant="h7">Drop files here or click to browse</Typography>
-              }
+              { renderDragMessage() }
           </Grid>
         </Grid> 
       </Box>
@@ -80,10 +89,10 @@ const ImageUploadDropzone = () => {
     if (currentFile) {
       return(
         <Paper variant="outlined" sx={{padding: "12px"}}>
-          <Typography variant="body2">{currentFile.path}</Typography>
+          
           <Grid container alignItems="center" justifyContent="space-between">
             <Grid item>
-              <TextField label="Image caption" variant="standard" size="small" fullWidth />
+              <Typography variant="body2">{currentFile.path}</Typography>
             </Grid>
             <Grid item>
               <Button onClick={() => {setCurrentFile()}} disableElevation>Clear</Button>
@@ -100,11 +109,17 @@ const ImageUploadDropzone = () => {
   return (
     <Card variant="outlined">
       <CardContent>
+        
         <Grid container direction="column" style={{height: "100%"}} spacing={2}>
+          <Grid item>
+            <Collapse in={currentFile}>
+              <TextField onChange={(e) => {setCurrentCaption(e.target.value)}} label="Image caption (optional)" variant="standard" size="small" fullWidth />
+            </Collapse>
+          </Grid>
           <Grid item>
             { renderDropzone() }
           </Grid>
-          <Grid item style={{display: !currentFile ? "none" : ""}}>
+          <Grid item>
             <Collapse in={currentFile} out={!currentFile}>
               {renderFilePreview()}
             </Collapse>
