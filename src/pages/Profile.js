@@ -1,17 +1,18 @@
 import { UserAppBar } from "../components/AppBar";
 import NavBar from "../components/NavBar";
 import { UserContext } from "../utils/UserProvider";
-import { useContext } from "react";
-import { Typography, Container, Box, Divider, TextField, ImageList, ImageListItem, ImageListItemBar, Fade} from "@mui/material";
+import { useContext, useState, useEffect } from "react";
+import { Typography, Container, Box, Divider, ImageList, ImageListItem, ImageListItemBar, Fade} from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { useState, useEffect } from "react";
 import axios from 'axios';
+import { publicUrl } from "../components/CommonURLs";
+import { useNavigate } from 'react-router-dom';
 
 export default function Profile() {
   const { currentUser } = useContext(UserContext);
   const [currentImages, setCurrentImages] = useState([]);
   const fullName = currentUser.givenName + " " + currentUser.familyName;
-  const publicUrl = "https://storage.googleapis.com/imagehosting-331720.appspot.com/";
+  const navigate = useNavigate();
 
   const getUserImages = () => {
     var config = {
@@ -35,6 +36,10 @@ export default function Profile() {
     getUserImages();
   }, []);
 
+  const handleClick = (imageName) => {
+    navigate('/image/' + imageName);
+  }
+
   return (
     <>
       <UserAppBar />
@@ -50,7 +55,7 @@ export default function Profile() {
         </Box>
         <Divider />
         <Container align="left" style={{ paddingTop: "16px" }}>
-          <Typography variant="h5">Your recent posts</Typography>
+          <Typography variant="h5">Your posts</Typography>
           <ImageList cols={3} gap={6}>
           {currentImages.map((image, index) => {
             return (
@@ -61,8 +66,7 @@ export default function Profile() {
                   transitionDelay: ((80 * index) ^ 2) + 50 + "ms",
                 }}
               >
-                <ImageListItem
-                >
+                <ImageListItem style={{cursor: "pointer"}} onClick={() => {handleClick(image.image)}}>
                   <img src={publicUrl + image.image} alt={image.caption} loading="lazy" />
                   {image.caption && <ImageListItemBar title={image.caption} />}
                 </ImageListItem>

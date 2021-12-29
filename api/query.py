@@ -52,6 +52,8 @@ def db_add_image(user_id, image, date_uploaded, caption):
     else:
         return True
 
+# def db_create_album_n_add_images(title, user_id, image_ids, date_created=datetime.datetime.now()):
+#     album = db_add_album(title,)
 
 
 def db_add_album(title, user_id, image_id=0, date_created=datetime.datetime.now()):
@@ -60,6 +62,7 @@ def db_add_album(title, user_id, image_id=0, date_created=datetime.datetime.now(
                       user_id=user_id, date_created=date_created)
         db.session.add(album)
         db.session.commit()
+        return album
     except exc.SQLAlchemyError as e:
         db.session.rollback()
         return False

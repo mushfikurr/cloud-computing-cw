@@ -4,11 +4,11 @@ import { Container, ImageListItem, ImageListItemBar } from "@mui/material";
 import NavBar from "../components/NavBar";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { publicUrl } from "../components/CommonURLs";
 
 export default function DisplayPage() {
     const { id } = useParams();
     const [isLoading, setIsLoading] = useState(false);
-    const publicUrl = "https://storage.googleapis.com/imagehosting-331720.appspot.com/" + id
     const [currentImage, setCurrentImage] = useState({});
 
     const getImageFromHash = () => {
@@ -42,7 +42,7 @@ export default function DisplayPage() {
                 <p>{currentImage.date_uploaded}</p>
                 <p>{currentImage.user_full_name}</p>
                 <ImageListItem>
-                    <img src={publicUrl} />
+                    <img src={publicUrl + id} />
                     {currentImage.caption && <ImageListItemBar title={currentImage.caption} />}
                   </ImageListItem>               
             </Container>

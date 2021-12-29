@@ -8,10 +8,10 @@ import {
 import { Info } from "@mui/icons-material";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { publicUrl } from "../components/CommonURLs";
 
 export default function RecentPosts() {
   const [currentImages, setCurrentImages] = useState([]);
-  const publicUrl = "https://storage.googleapis.com/imagehosting-331720.appspot.com/"
 
   const getRecentImages = () => {
     var config = {

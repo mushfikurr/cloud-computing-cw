@@ -1,5 +1,5 @@
 import { UserContext } from "../utils/UserProvider";
-import { useContext, useRef } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserAppBar } from "../components/AppBar";
 import NavBar from "../components/NavBar";
 import {
@@ -11,12 +11,14 @@ import {
   ImageListItem,
   Collapse,
   ImageListItemBar,
-  Button
+  Button,
+  Fade,
+  IconButton,
 } from "@mui/material";
-import { IconButton, Fade } from "@mui/material";
-import { useEffect, useState } from "react";
 import axios from "axios";
 import { grey } from '@mui/material/colors';
+import { publicUrl } from "../components/CommonURLs";
+import ClearIcon from '@mui/icons-material/Clear';
 
 export default function CreateAlbum() {
   const { currentUser } = useContext(UserContext);
@@ -25,7 +27,6 @@ export default function CreateAlbum() {
   const [currentSelectedImages, setCurrentSelectedImages] = useState([]);
   
   const [currentAlbumName, setCurrentAlbumName] = useState();
-  const publicUrl = "https://storage.googleapis.com/imagehosting-331720.appspot.com/";
 
   const handleClick = (imageid) => {
     if (currentSelectedImages.includes(imageid)) {
@@ -129,7 +130,13 @@ export default function CreateAlbum() {
           {renderTextField()}
         </Box>
         <Collapse in={currentSelectedImages.length > 0} out={currentSelectedImages.length === 0}>
-          <Typography variant="subtitle2" color={grey[800]}>Selected images: {currentSelectedImages.length}</Typography>
+          <Box>
+            <Typography variant="subtitle2" color={grey[800]}>Selected images: {currentSelectedImages.length} 
+              <IconButton onClick={() => {setCurrentSelectedImages([])}} size="small" style={{marginBottom: "2px", marginLeft: "6px"}}>
+                <ClearIcon fontSize="inherit" />
+              </IconButton>
+            </Typography>
+          </Box>
         </Collapse>
         <Box style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
           <ImageList cols={8} gap={0}>
@@ -146,6 +153,7 @@ export default function CreateAlbum() {
                     onClick={(e) => {
                       handleClick(image.id);
                     }}
+                    style={{ cursor: "pointer"}}
                   >
                     {renderImage(image)}
                     {image.caption && <ImageListItemBar title={image.caption} />}

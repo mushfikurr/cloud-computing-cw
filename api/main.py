@@ -33,7 +33,6 @@ db = SQLAlchemy(app)
 
 from api.query import db_add_image, db_add_user, db_add_image, db_get_n_recent_images, db_get_image_by_user_id, db_get_user_by_id, db_get_user_by_sub, db_add_user_without_family, db_get_image_by_hash
 
-
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.session_protection = "strong"
@@ -55,27 +54,6 @@ app.session_interface = CustomSessionInterface()
 @login_manager.user_loader
 def load_user(id):
     return db_get_user_by_id(id)
-
-
-def attempt_token_verification():
-    try:
-        token = request.headers.get('Authorization')
-        # Specify the CLIENT_ID of the app that accesses the backend:
-        idinfo = id_token.verify_oauth2_token(
-            token, requests.Request(), '1084294817544-vcbqovejip9q2drlfaoke9kr6je0akqj.apps.googleusercontent.com')
-        if idinfo['sub']:
-            user_query = db_get_user_by_sub(idinfo['sub'])
-            print(user_query)
-            if user_query:
-                print(user_query, " verified via request (already exists)")
-                return user_query
-            else:
-                print("Failed login (acct does not exist)")
-                return None
-        else:
-            return {"error": "This was not a valid token."}
-    except ValueError:
-        return {'error': 'Failed in verifying token'}
 
 
 @app.route("/")
@@ -105,9 +83,8 @@ def login():
                 login_user(user)
                 print(user_query, " logged in (new acct created)")
                 return {'login': 'True'}
-    except ValueError as e:
-        print(e)
-        return {'login': 'False'}
+    except ValueError:
+        return {'login': "Failed to validate token"}, 401
 
 
 @app.route("/api/data", methods=["GET"])
@@ -163,7 +140,7 @@ def recent_images():
     if query:
         return {"images": [{**img.as_dict(), **{"user_full_name": full_name(db_get_user_by_id(img.user_id))}} for img in query]}
     else:
-        return {"error": "Failed to retrieve recent images."}, 401
+        return {"error": "Failed to retrieve recent images."}, 403
 
 
 @app.route("/api/image/", methods=["POST"])
@@ -177,7 +154,7 @@ def image_by_hash():
         else:
             return {"error": "Failed to retrieve image " + request.form.get('hash')}, 401
     else:
-        return {"error": "No hash provided"}, 401
+        return {"error": "No hash provided"}, 400
 
 
 @app.route("/api/image/user")
@@ -188,7 +165,7 @@ def current_user_images():
     if query:
         return {"images": [img.as_dict() for img in query]}
     else:
-        return {"error": "Failed to retrieve users images."}, 401
+        return {"error": "Failed to retrieve users images."}, 403
 
 
 @app.route("/api/logout")
