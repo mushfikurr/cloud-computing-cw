@@ -112,9 +112,7 @@ const ImageUploadDropzone = () => {
         
         <Grid container direction="column" style={{height: "100%"}} spacing={2}>
           <Grid item>
-            <Collapse in={currentFile}>
-              <TextField onChange={(e) => {setCurrentCaption(e.target.value)}} label="Image caption (optional)" variant="standard" size="small" fullWidth />
-            </Collapse>
+            <TextField onChange={(e) => {setCurrentCaption(e.target.value)}} label="Image caption (optional)" variant="standard" size="small" fullWidth />
           </Grid>
           <Grid item>
             { renderDropzone() }
