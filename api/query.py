@@ -52,8 +52,21 @@ def db_add_image(user_id, image, date_uploaded, caption):
     else:
         return True
 
-# def db_create_album_n_add_images(title, user_id, image_ids, date_created=datetime.datetime.now()):
-#     album = db_add_album(title,)
+
+def db_new_album_multiple_images(album_title, user_id, list_of_image_ids):
+    try:
+        print("query", list_of_image_ids)
+        new_album = Album(title=album_title, user_id=user_id,
+                          date_created=datetime.datetime.now())
+        images = Image.query.filter(Image.id.in_(list_of_image_ids)).all()
+        new_album.images = [x for x in images]
+        db.session.add(new_album)
+        db.session.commit()
+        return new_album
+    except exc.SQLAlchemyError as e:
+        print(e)
+        db.session.rollback()
+        return None
 
 
 def db_add_album(title, user_id, image_id=0, date_created=datetime.datetime.now()):
@@ -124,6 +137,7 @@ def db_get_image_by_id(image_id):
     else:
         return image
 
+
 def db_get_image_by_hash(hash):
     try:
         image = Image.query.filter_by(image=hash).first()
@@ -180,7 +194,8 @@ def db_get_user_by_sub(sub):
 
 def db_get_image_by_user_id(user_id):
     try:
-        image = Image.query.filter_by(user_id=user_id).all()
+        image = Image.query.filter_by(user_id=user_id).order_by(
+            desc(Image.date_uploaded)).all()
     except exc.SQLAlchemyError as e:
         return None
     else:
@@ -199,14 +214,25 @@ def db_get_n_recent_images(n):
 
 # search for all albums from a specific user id
 
+# get first image from a specific album_id
 
-def db_get_album_by_user_id(user_id):
+
+def db_get_first_image_from_album(album_id):
     try:
-        album = Album.query.filter_by(user_id=user_id).all()
+        image = Image.query.filter(Image.albums.any(id=album_id)).first()
+        return image
     except exc.SQLAlchemyError as e:
-        return False
-    else:
+        print(e)
+        return None
+
+
+def db_get_albums_by_user_id(user_id):
+    try:
+        album = Album.query.filter_by(user_id=user_id).order_by(
+            desc(Album.date_created)).all()
         return album
+    except exc.SQLAlchemyError as e:
+        return None
 
 # search for albums that contain a specific image id
 

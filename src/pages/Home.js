@@ -18,6 +18,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { grey } from "@mui/material/colors";
 import AppBarNavBar from "../components/AppBarNavBar";
+import PageTemplate from "./PageTemplate";
 
 export default function Home() {
   const { isAuthenticated, currentUser, isLoading } = useContext(UserContext);
@@ -25,7 +26,7 @@ export default function Home() {
   const [isAlertOpen, setIsAlertOpen] = useState(true);
 
   return isAuthenticated() ? (
-    <>
+    <PageTemplate>
       {/* This is logged in */}
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 2 }}
@@ -33,15 +34,14 @@ export default function Home() {
       >
         <CircularProgress color="inherit" />
       </Backdrop>
-      <AppBarNavBar />
       <Container>
         <Typography variant="h4">Hi {currentUser.givenName}</Typography>
         <Typography variant="subtitle2">Recent Crisp images</Typography>
         <RecentPosts />
       </Container>
-    </>
+    </PageTemplate>
   ) : (
-    <>
+    <PageTemplate>
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 2 }}
         open={isLoading}
@@ -49,7 +49,6 @@ export default function Home() {
         <CircularProgress color="inherit" />
       </Backdrop>
       {/* This is not logged in */}
-      <UserAppBar />
       <Container>
         <Collapse in={isAlertOpen}>
           <Alert
@@ -75,6 +74,6 @@ export default function Home() {
         <Typography variant="h4">Recent Crisp images</Typography>
         <RecentPosts />
       </Container>
-    </>
+    </PageTemplate>
   );
 }

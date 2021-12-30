@@ -11,6 +11,7 @@ import {
   Button,
 } from "@mui/material";
 import GoogleLogin from "react-google-login";
+import { useNavigate } from "react-router-dom";
 
 const renderRightSide = (props) => {
   const onSuccess = (response) => {
@@ -56,6 +57,7 @@ const renderRightSide = (props) => {
 export const UserAppBar = () => {
   const { currentUser, login, logout, isAuthenticated } =
     useContext(UserContext);
+  const history = useNavigate();
   let fullName = currentUser.givenName + " " + currentUser.familyName;
   return (
     <>
@@ -70,8 +72,9 @@ export const UserAppBar = () => {
             <Typography
               variant="h6"
               align="left"
-              component="div"
-              sx={{ flexGrow: 1 }}
+              component="div" 
+              sx={{ flexGrow: 1, cursor: "pointer" }}
+              onClick={() => {history("/")}}
             >
               Crisp
             </Typography>

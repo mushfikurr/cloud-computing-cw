@@ -50,9 +50,7 @@ function App() {
         <Route
           path="/image/:id"
           element={
-            <RequireAuth>
-              <DisplayPage />
-            </RequireAuth>
+            <DisplayPage />
           }
         />{" "}
       </Routes>

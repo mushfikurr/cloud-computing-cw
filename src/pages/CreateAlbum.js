@@ -12,18 +12,23 @@ import {
   Button,
   Fade,
   IconButton,
+  Card,
+  CardContent
 } from "@mui/material";
 import axios from "axios";
 import { grey } from '@mui/material/colors';
 import { publicUrl } from "../components/CommonURLs";
 import ClearIcon from '@mui/icons-material/Clear';
-import AppBarNavBar from "../components/AppBarNavBar";
+import PageTemplate from "./PageTemplate";
+import { useSnackbar } from "notistack";
 
 export default function CreateAlbum() {
+  const { enqueueSnackbar } = useSnackbar();
   const { currentUser } = useContext(UserContext);
   const fullName = currentUser.givenName + " " + currentUser.familyName;
   const [currentImages, setCurrentImages] = useState([]);
   const [currentSelectedImages, setCurrentSelectedImages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   
   const [currentAlbumName, setCurrentAlbumName] = useState();
 
@@ -39,6 +44,36 @@ export default function CreateAlbum() {
     }
   };
 
+  const createAlbum = () => {
+    var formData = new FormData();
+    formData.append("album_title", currentAlbumName);
+    formData.append("images", currentSelectedImages);
+    setIsLoading(true);
+    axios({
+      method: "post",
+      url: "/api/album/create",
+      data: formData,
+    })
+    .then(function (response) {
+      setIsLoading(false);
+      setCurrentSelectedImages([]);
+      setCurrentAlbumName("");
+      enqueueSnackbar("Album created successfully!", {
+        autoHideDuration: 2000,
+        resumeHideDuration: 0,
+        variant: "Success",
+      });
+    })
+    .catch(function (response) {
+      setIsLoading(false);
+      enqueueSnackbar("There was an error creating your album.", {
+        autoHideDuration: 2000,
+        resumeHideDuration: 0,
+        variant: "Error",
+      });
+    });
+  }
+
   const getUserImages = () => {
     var config = {
       method: "get",
@@ -50,7 +85,6 @@ export default function CreateAlbum() {
     axios(config)
       .then(function (response) {
         setCurrentImages(response.data.images);
-        console.log(response.data.images);
       })
       .catch(function (error) {
         console.log(error);
@@ -60,10 +94,6 @@ export default function CreateAlbum() {
   useEffect(() => {
     getUserImages();
   }, []);
-
-  useEffect(() => {
-    console.log(currentSelectedImages);
-  }, [currentSelectedImages]);
 
   const renderImage = (image) => {
     if (currentSelectedImages.includes(image.id)) {
@@ -117,10 +147,10 @@ export default function CreateAlbum() {
   }
 
   return (
-    <>
-      <AppBarNavBar />
-      <Container style={{ padding: "16px" }}>
-        
+    <PageTemplate>
+      <Container style={{ padding: "10px" }}>
+        <Card>
+          <CardContent>
         {/* <Typography variant="h4" style={{ paddingBottom: "20px" }}>
           Create Album
         </Typography> */}
@@ -137,7 +167,7 @@ export default function CreateAlbum() {
           </Box>
         </Collapse>
         <Box style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
-          <ImageList cols={8} gap={0}>
+          <ImageList cols={6} gap={0} sx={{ height: 575 }}>
             {currentImages.map((image, index) => {
               return (
                 <Fade
@@ -163,9 +193,11 @@ export default function CreateAlbum() {
         </Box>
         
         <Collapse in={currentSelectedImages.length > 0 && currentAlbumName}>
-          <Button variant="contained">Create</Button>
+          <Button variant="contained" onClick={() => {createAlbum()}}>Create</Button>
         </Collapse>
+        </CardContent>
+        </Card>
       </Container>
-    </>
+    </PageTemplate>
   );
 }

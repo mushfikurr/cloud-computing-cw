@@ -25,6 +25,7 @@ import DoneIcon from "@mui/icons-material/Done";
 import { useDropzone } from "react-dropzone";
 import { grey } from "@mui/material/colors";
 import AppBarNavBar from "../components/AppBarNavBar";
+import PageTemplate from "./PageTemplate";
 
 const ImageUploadDropzone = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -209,10 +210,10 @@ const ImageUploadDropzone = () => {
 
   return (
     <>
-      <Typography variant="h4" style={{ marginBottom: "16px" }}>
+      {/* <Typography variant="h4" style={{ marginBottom: "16px" }}>
         Upload an image
-      </Typography>
-      <Card variant="outlined">
+      </Typography> */}
+      <Card>
         <CardContent>
           <Grid
             container
@@ -251,11 +252,10 @@ const ImageUploadDropzone = () => {
 
 export default function UploadImage() {
   return (
-    <>
+    <PageTemplate>
       <Container style={{ padding: "10px" }}>
-        <AppBarNavBar />
         <ImageUploadDropzone />
       </Container>
-    </>
+    </PageTemplate>
   );
 }

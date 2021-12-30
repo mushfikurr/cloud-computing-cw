@@ -27,6 +27,7 @@ import {
   ListItem,
   Box,
   IconButton,
+  Link,
 } from "@mui/material";
 
 const drawerWidth = 240;
@@ -185,11 +186,12 @@ export default function AppBarNavBar() {
             <Typography
               variant="h6"
               noWrap
-              component="div"
               sx={{ flexGrow: 1 }}
+              onClick={() => {history("/")}}
             >
               Crisp
             </Typography>
+           
             <Box style={{ flexGrow: 0 }}>
               {renderRightSide({
                 login,

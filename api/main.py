@@ -31,8 +31,7 @@ app.config.update(
 cors = CORS(app)
 db = SQLAlchemy(app)
 
-from api.query import db_add_image, db_add_user, db_add_image, db_get_n_recent_images, db_get_image_by_user_id, db_get_user_by_id, db_get_user_by_sub, db_add_user_without_family, db_get_image_by_hash
-
+from api.query import db_add_image, db_add_user, db_add_image, db_get_all_images_from_album, db_get_n_recent_images, db_get_image_by_user_id, db_get_user_by_id, db_get_user_by_sub, db_add_user_without_family, db_get_image_by_hash, db_new_album_multiple_images, db_get_albums_by_user_id, db_get_first_image_from_album
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.session_protection = "strong"
@@ -167,6 +166,48 @@ def current_user_images():
         return {"images": [img.as_dict() for img in query]}
     else:
         return {"error": "Failed to retrieve users images."}, 403
+
+
+@app.route("/api/album/previews")
+@login_required
+def preview_album():
+    query = db_get_albums_by_user_id(current_user.id)
+
+    def get_preview_image(album_id):
+        return db_get_first_image_from_album(album_id).image
+
+    if query is not None:
+        return {"albums": [{**album.as_dict(), **{"preview_img": get_preview_image(album.id)}} for album in query]}
+    else:
+        return {"error": "Failed to retrieve albums"}, 403
+
+
+@app.route("/api/album", methods=["POST"])
+@login_required
+def get_images_from_album():
+    album_id = request.form.get('album_id')
+    query = db_get_all_images_from_album(album_id)
+
+    if query is not None:
+        return {"album_id": album_id, "images": [img.as_dict() for img in query]}
+    else:
+        return {"error": "Failed to retrieve images from album"}, 403
+
+
+@app.route("/api/album/create", methods=["POST"])
+@login_required
+def create_album():
+    images = request.form.get('images')
+    album_title = request.form.get('album_title')
+    if not images or not album_title:
+        return {"error": "Missing an entry to create a form."}, 400
+    new_album = db_new_album_multiple_images(
+        album_title, current_user.id, images.split(","))
+    print("main", images)
+    if new_album is not None:
+        return new_album.as_dict()
+    else:
+        return {"error": "Failed to create album."}, 403
 
 
 @app.route("/api/logout")
