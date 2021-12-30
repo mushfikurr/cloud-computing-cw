@@ -108,8 +108,7 @@ const ImageUploadDropzone = () => {
 
   return (
     <Card variant="outlined">
-      <CardContent>
-        
+      <CardContent> 
         <Grid container direction="column" style={{height: "100%"}} spacing={2}>
           <Grid item>
             <TextField onChange={(e) => {setCurrentCaption(e.target.value)}} label="Image caption (optional)" variant="standard" size="small" fullWidth />
