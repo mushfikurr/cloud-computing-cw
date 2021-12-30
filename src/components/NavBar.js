@@ -72,3 +72,7 @@ export default function NavBar() {
     </>
   );
 }
+
+// Make the mini drawer here, and I'll try look into the logic
+// Also dw about the state stuff, just need the mini drawer itself (from documentation)
+

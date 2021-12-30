@@ -83,7 +83,8 @@ def login():
                 login_user(user)
                 print(user_query, " logged in (new acct created)")
                 return {'login': 'True'}
-    except ValueError:
+    except ValueError as e:
+        print(e)
         return {'login': "Failed to validate token"}, 401
 
 

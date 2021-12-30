@@ -20,133 +20,25 @@ import { useCopyToClipboard } from "../components/useCopyToClipboard";
 import { useState, useCallback } from "react";
 import { useSnackbar } from "notistack";
 import { rootUrl } from "../components/CommonURLs";
-import LoadingButton from '@mui/lab/LoadingButton';
-import {useDropzone} from 'react-dropzone'
+import LoadingButton from "@mui/lab/LoadingButton";
+import DoneIcon from "@mui/icons-material/Done";
+import { useDropzone } from "react-dropzone";
 import { grey } from "@mui/material/colors";
+import AppBarNavBar from "../components/AppBarNavBar";
 
 const ImageUploadDropzone = () => {
-  const [currentFile, setCurrentFile] = useState();
-  const [currentCaption, setCurrentCaption] = useState();
-
-  // const uploadFile = () => {  
-  //   var formData = new FormData();
-  //   formData.append("image", currentFile);
-  //   formData.append("caption", currentCaption);
-  //   setIsLoading(true);
-  //   axios({
-  //     method: "post",
-  //     url: "/api/image/new",
-  //     data: formData,
-  //   })
-  //     .then(function (response) {
-  //       console.log(response.data);
-  //       copy(rootUrl + "image/" + response.data.img_hash);
-  //       onSuccess();
-  //     })
-  //     .catch(function (response) {
-  //       console.log(response);
-  //       setIsLoading(false);
-  //       enqueueSnackbar("Unable to upload image.", {
-  //         autoHideDuration: 1500,
-  //         resumeHideDuration: 0,
-  //         variant: "Error",
-  //       });
-  //     });
-  // };
-
-  const onDrop = useCallback(acceptedFiles => {
-    setCurrentFile(acceptedFiles[0]);
-  }, [])
-
-  const {getRootProps, getInputProps, isDragActive} = useDropzone({accept: 'image/jpeg, image/png', onDrop})
-
-  const renderDragMessage = () => {
-    if (isDragActive) {
-      return <Typography variant="h7">Drop your image here!</Typography> 
-    }else{
-      if (currentFile) {
-        return <Typography variant="h7">Drop another image here to change or click to browse.</Typography> 
-      }else{
-        return <Typography variant="h7">Drop image here or click to browse.</Typography>
-      }
-    }
-  }
-
-  const renderDropzone = () => {
-    return (
-      <Box style={{height: "250px"}} sx={{ border: '1px dashed grey', backgroundColor: isDragActive ? grey[100] : "" }} {...getRootProps()}>
-        <Grid container alignItems="center" justifyContent="center" style={{height: "100%"}}>
-          <Grid item>
-            <input {...getInputProps()} />
-              { renderDragMessage() }
-          </Grid>
-        </Grid> 
-      </Box>
-    )
-  }
-
-  const renderFilePreview = () => {
-    if (currentFile) {
-      return(
-        <Paper variant="outlined" sx={{padding: "12px"}}>
-          
-          <Grid container alignItems="center" justifyContent="space-between">
-            <Grid item>
-              <Typography variant="body2">{currentFile.path}</Typography>
-            </Grid>
-            <Grid item>
-              <Button onClick={() => {setCurrentFile()}} disableElevation>Clear</Button>
-              <Button variant="contained" disableElevation style={{ marginLeft: "4px"}}>Upload</Button>
-            </Grid>
-          </Grid>
-         
-          
-        </Paper>
-      ) 
-    }
-  }
-
-  return (
-    <Card variant="outlined">
-      <CardContent>
-        
-        <Grid container direction="column" style={{height: "100%"}} spacing={2}>
-          <Grid item>
-            <TextField onChange={(e) => {setCurrentCaption(e.target.value)}} label="Image caption (optional)" variant="standard" size="small" fullWidth />
-          </Grid>
-          <Grid item>
-            { renderDropzone() }
-          </Grid>
-          <Grid item>
-            <Collapse in={currentFile} out={!currentFile}>
-              {renderFilePreview()}
-            </Collapse>
-          </Grid>
-        </Grid>
-      </CardContent>
-    </Card>
-  )
-}
-
-const ImageUpload = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const [isLoading, setIsLoading] = useState(false);
   const [currentFile, setCurrentFile] = useState();
   const [currentCaption, setCurrentCaption] = useState();
+  const [successfulImage, setSuccessfulImage] = useState();
+  const [isLoading, setIsLoading] = useState(false);
   const [copied, copy] = useCopyToClipboard("");
-  const handleChange = (e) => {
-    setCurrentFile(e.target.files[0]);
-  };
 
-  const onSuccess = () => {
+  const onSuccess = (img_hash) => {
+    setSuccessfulImage({ hash: img_hash, img: currentFile });
     setIsLoading(false);
     setCurrentFile();
     setCurrentCaption();
-    enqueueSnackbar("Image copied to clipboard!", {
-      autoHideDuration: 2500,
-      resumeHideDuration: 0,
-      variant: "Success",
-    });
     enqueueSnackbar("Image uploaded successfully!", {
       autoHideDuration: 2000,
       resumeHideDuration: 0,
@@ -154,8 +46,7 @@ const ImageUpload = () => {
     });
   };
 
-  
-  const uploadFile = () => {  
+  const uploadFile = () => {
     var formData = new FormData();
     formData.append("image", currentFile);
     formData.append("caption", currentCaption);
@@ -167,8 +58,7 @@ const ImageUpload = () => {
     })
       .then(function (response) {
         console.log(response.data);
-        copy(rootUrl + "image/" + response.data.img_hash);
-        onSuccess();
+        onSuccess(response.data.img_hash);
       })
       .catch(function (response) {
         console.log(response);
@@ -181,98 +71,180 @@ const ImageUpload = () => {
       });
   };
 
-  
-  
+  const onDrop = useCallback((acceptedFiles) => {
+    setCurrentFile(acceptedFiles[0]);
+  }, []);
 
-  const renderUploadButton = () => {
-    if (isLoading) {
-      return <LoadingButton loading={isLoading} variant="outlined" style={{ marginRight: "8px"}} disabled>Upload</LoadingButton>
-    }else{
-      return <Button variant="contained" onClick={uploadFile} component="span">Upload</Button>
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: "image/jpeg, image/png",
+    onDrop,
+  });
+
+  const renderDragMessage = () => {
+    if (isDragActive) {
+      return <Typography variant="h7">Drop your image here!</Typography>;
+    } else {
+      if (currentFile) {
+        return (
+          <Typography variant="h7">
+            Drop another image here to change or click to browse.
+          </Typography>
+        );
+      } else {
+        return (
+          <Typography variant="h7">
+            Drop image here or click to browse.
+          </Typography>
+        );
+      }
     }
-  }
+  };
 
-  const renderChangeButton = () => {
-    if (isLoading) {
-      return (
-        <label htmlFor="contained-button-file">
-          
-          <LoadingButton loading={isLoading} variant="outlined" style={{ marginRight: "8px"}} disabled>
-            Change
-          </LoadingButton>
-        </label>)
-    }else{
-      return (
-        <label htmlFor="contained-button-file">
-          <Button variant="contained" component="span" style={{ marginRight: "8px"}}>
-            Change
-          </Button>
-        </label>)
-    }
-  }
-
-  const renderImageSelect = () => {
+  const renderDropzone = () => {
     return (
-      <>
-        {currentFile ? (
-          <>
-            <Collapse in={true}>
-              <Box style={{ width: "inherit"}}>
-                <Box style={{ margin: "8px" }}>
-                  <Fade in={true}>
-                    <img src={URL.createObjectURL(currentFile)} />
-                  </Fade>
-                  <Box sx={{ paddingBottom: "16px" }}>
-                    <TextField
-                      id="input-caption"
-                      label="Image caption"
-                      variant="standard"
-                      onChange={(e) => {
-                        setCurrentCaption(e.target.value);
-                      }}
-                    />
-                  </Box>
-                  <Box>
-                    <Input
-                      accept="image/*"
-                      id="contained-button-file"
-                      multiple
-                      type="file"
-                      style={{ display: "none" }}
-                      onChange={handleChange}
-                    />
-                    { renderChangeButton() }
-                    { renderUploadButton() }
-                  </Box>
-                </Box>
-              </Box>
-            </Collapse>
-          </>
-        ) : (
-          <>
-            <Input
-              id="contained-button-file"
-              type="file"
-              style={{ display: "none" }}
-              onChange={handleChange}
-            />
-            <label htmlFor="contained-button-file">
-              <Button variant="contained" component="span">
-                Choose a photo
+      <Box
+        style={{ height: "250px" }}
+        sx={{
+          border: "1px dashed grey",
+          backgroundColor: isDragActive ? grey[100] : "",
+        }}
+        {...getRootProps()}
+      >
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="center"
+          style={{ height: "100%" }}
+        >
+          <Grid item>
+            <input {...getInputProps()} />
+            {renderDragMessage()}
+          </Grid>
+        </Grid>
+      </Box>
+    );
+  };
+
+  const handleCopy = () => {
+    enqueueSnackbar("Image copied to clipboard successfully!", {
+      autoHideDuration: 2000,
+      resumeHideDuration: 0,
+      variant: "Success",
+    });
+    copy(rootUrl + "image/" + successfulImage.hash);
+  };
+
+  const renderSuccessfulImagePreview = () => {
+    if (successfulImage) {
+      return (
+        <Paper variant="outlined" sx={{ padding: "12px" }}>
+          <Grid container alignItems="center" justifyContent="space-between">
+            <Grid item>
+              <Typography variant="overline">Complete</Typography>
+              <Typography variant="body2">
+                {successfulImage.img.path}
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Button
+                onClick={() => {
+                  setSuccessfulImage();
+                }}
+                disableElevation
+              >
+                Clear
               </Button>
-            </label>
-          </>
-        )}
-      </>
-    )
-  }
+              <Button
+                onClick={() => {
+                  handleCopy();
+                }}
+                variant="contained"
+                disableElevation
+                style={{ marginLeft: "4px" }}
+              >
+                Copy
+              </Button>
+            </Grid>
+          </Grid>
+        </Paper>
+      );
+    }
+  };
+
+  const renderFilePreview = () => {
+    if (currentFile) {
+      return (
+        <Paper variant="outlined" sx={{ padding: "12px" }}>
+          <Grid container alignItems="center" justifyContent="space-between">
+            <Grid item>
+              <Typography variant="body2">{currentFile.path}</Typography>
+            </Grid>
+            <Grid item>
+              <LoadingButton
+                loading={isLoading}
+                onClick={() => {
+                  setCurrentFile();
+                }}
+                disableElevation
+              >
+                Clear
+              </LoadingButton>
+              <LoadingButton
+                loading={isLoading}
+                onClick={() => {
+                  uploadFile();
+                }}
+                variant="contained"
+                disableElevation
+                style={{ marginLeft: "4px" }}
+              >
+                Upload
+              </LoadingButton>
+            </Grid>
+          </Grid>
+        </Paper>
+      );
+    }
+  };
 
   return (
     <>
-      <Typography variant="h4" style={{ paddingBottom: "20px" }}>
+      <Typography variant="h4" style={{ marginBottom: "16px" }}>
         Upload an image
       </Typography>
-      <ImageUploadDropzone />
+      <Card variant="outlined">
+        <CardContent>
+          <Grid
+            container
+            direction="column"
+            style={{ height: "100%" }}
+            spacing={3}
+          >
+            <Grid item>
+              <TextField
+                onChange={(e) => {
+                  setCurrentCaption(e.target.value);
+                }}
+                label="Image caption (optional)"
+                variant="standard"
+                size="small"
+                fullWidth
+              />
+            </Grid>
+            <Grid item>{renderDropzone()}</Grid>
+            <Grid item>
+              <Collapse in={currentFile} out={!currentFile}>
+                <Box>{renderFilePreview()}</Box>
+              </Collapse>
+              <Collapse in={successfulImage} out={!successfulImage}>
+                <Box sx={{ paddingTop: "4px" }}>
+                  {renderSuccessfulImagePreview()}
+                </Box>
+              </Collapse>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
     </>
   );
 };
@@ -281,9 +253,8 @@ export default function UploadImage() {
   return (
     <>
       <Container style={{ padding: "10px" }}>
-        <UserAppBar />
-        <NavBar />
-        <ImageUpload />
+        <AppBarNavBar />
+        <ImageUploadDropzone />
       </Container>
     </>
   );
