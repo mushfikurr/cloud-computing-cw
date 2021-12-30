@@ -5,6 +5,7 @@ import NavBar from "../components/NavBar";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { publicUrl } from "../components/CommonURLs";
+import AppBarNavBar from "../components/AppBarNavBar";
 
 export default function DisplayPage() {
     const { id } = useParams();
@@ -36,8 +37,7 @@ export default function DisplayPage() {
     
     return (
         <>
-            <UserAppBar />
-            <NavBar />
+            <AppBarNavBar />
             <Container justifyContent="center">
                 <p>{currentImage.date_uploaded}</p>
                 <p>{currentImage.user_full_name}</p>

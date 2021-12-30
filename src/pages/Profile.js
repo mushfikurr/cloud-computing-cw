@@ -7,6 +7,7 @@ import { grey } from "@mui/material/colors";
 import axios from 'axios';
 import { publicUrl } from "../components/CommonURLs";
 import { useNavigate } from 'react-router-dom';
+import AppBarNavBar from "../components/AppBarNavBar";
 
 export default function Profile() {
   const { currentUser } = useContext(UserContext);
@@ -42,8 +43,7 @@ export default function Profile() {
 
   return (
     <>
-      <UserAppBar />
-      <NavBar />
+      <AppBarNavBar/>
       <Container align="center">
         <Box style={{ paddingBottom: "8px" }}>
           {" "}

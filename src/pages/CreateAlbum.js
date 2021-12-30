@@ -1,7 +1,5 @@
 import { UserContext } from "../utils/UserProvider";
 import { useContext, useEffect, useState } from "react";
-import { UserAppBar } from "../components/AppBar";
-import NavBar from "../components/NavBar";
 import {
   Container,
   TextField,
@@ -19,6 +17,7 @@ import axios from "axios";
 import { grey } from '@mui/material/colors';
 import { publicUrl } from "../components/CommonURLs";
 import ClearIcon from '@mui/icons-material/Clear';
+import AppBarNavBar from "../components/AppBarNavBar";
 
 export default function CreateAlbum() {
   const { currentUser } = useContext(UserContext);
@@ -119,8 +118,7 @@ export default function CreateAlbum() {
 
   return (
     <>
-      <UserAppBar />
-      <NavBar />
+      <AppBarNavBar />
       <Container style={{ padding: "16px" }}>
         
         {/* <Typography variant="h4" style={{ paddingBottom: "20px" }}>
