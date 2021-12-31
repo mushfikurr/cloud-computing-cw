@@ -129,10 +129,6 @@ export default function AppBarNavBar() {
       props.login(response.tokenId);
     };
 
-    const onFailure = (response) => {
-      console.log(response);
-    };
-
     return props.isAuthenticated() ? (
       <>
         <Button
@@ -159,7 +155,6 @@ export default function AppBarNavBar() {
         )}
         buttonText="Login"
         onSuccess={onSuccess}
-        onFailure={onFailure}
         cookiePolicy={"single_host_origin"}
       />
     );

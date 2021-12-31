@@ -25,13 +25,11 @@ export default function RecentPosts() {
     axios(config)
       .then(function (response) {
         if (response.data) {
-          console.log(response.data.images);
           setCurrentImages(response.data.images);
         } else {
           setCurrentImages([]);
         }
 
-        console.log(response.data.images);
       })
       .catch(function (error) {
         console.log(error);

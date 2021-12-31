@@ -31,11 +31,9 @@ export default function DisplayPage() {
             data: formData,
         })
         .then(function (response) {
-            console.log(response.data.image);
             setCurrentImage(response.data.image);
         })
         .catch(function (response) {
-            console.log(response);
             setIsLoading(false);
       });
     }
