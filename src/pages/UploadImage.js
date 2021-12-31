@@ -58,11 +58,9 @@ const ImageUploadDropzone = () => {
       data: formData,
     })
       .then(function (response) {
-        console.log(response.data);
         onSuccess(response.data.img_hash);
       })
       .catch(function (response) {
-        console.log(response);
         setIsLoading(false);
         enqueueSnackbar("Unable to upload image.", {
           autoHideDuration: 1500,

@@ -16,10 +16,6 @@ const UserProvider = ({ children }) => {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    console.log(isAuthenticated());
-  }, [currentUser]);
-
   const login = (tokenId) => {
     var data = new FormData();
     data.append("token_id", tokenId);

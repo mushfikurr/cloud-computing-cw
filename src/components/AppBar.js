@@ -18,9 +18,6 @@ const renderRightSide = (props) => {
     props.login(response.tokenId);
   };
 
-  const onFailure = (response) => {
-    console.log(response);
-  };
 
   return props.isAuthenticated() ? (
     <>
@@ -48,7 +45,6 @@ const renderRightSide = (props) => {
       )}
       buttonText="Login"
       onSuccess={onSuccess}
-      onFailure={onFailure}
       cookiePolicy={"single_host_origin"}
     />
   );
