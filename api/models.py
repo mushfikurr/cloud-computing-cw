@@ -1,4 +1,4 @@
-from api.main import db
+from main import db
 from flask_login import UserMixin
 
 album_image = db.Table('album_image', db.Model.metadata,
@@ -33,8 +33,9 @@ class Image(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     date_uploaded = db.Column(db.DateTime, nullable=False)
-    image = db.Column(db.String(150))  # i added this line
+    image = db.Column(db.String(150)) 
     caption = db.Column(db.String(150))
+    public = db.Column(db.SmallInteger())
 
     def __repr__(self):
         return f'Image ({self.id} {self.user_id} {self.date_uploaded} {self.caption})'

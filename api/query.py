@@ -1,4 +1,4 @@
-from api.models import User, Image, Album
+from models import User, Image, Album
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -7,7 +7,7 @@ import datetime
 from sqlalchemy import desc
 from sqlalchemy import exc
 
-from api.main import db
+from main import db
 
 
 def db_commit_add(row):
@@ -36,14 +36,14 @@ def db_add_user_without_family(sub, email, picture, given_name):
     return user
 
 
-def db_add_image(user_id, image, date_uploaded, caption):
+def db_add_image(user_id, image, date_uploaded, caption, public):
     try:
         if caption == "undefined":
             image = Image(user_id=user_id, image=image,
-                          date_uploaded=date_uploaded, caption="")
+                          date_uploaded=date_uploaded, caption="", public=public)
         else:
             image = Image(user_id=user_id, image=image,
-                          date_uploaded=date_uploaded, caption=caption)
+                          date_uploaded=date_uploaded, caption=caption, public=public)
         db.session.add(image)
         db.session.commit()
     except exc.SQLAlchemyError as e:
@@ -103,6 +103,30 @@ def db_delete_image(image_id):
         return False
     else:
         return True
+
+
+def db_delete_images(list_of_image_ids):
+    try:
+        images = Image.query.filter(Image.id.in_(list_of_image_ids))
+        images.delete(synchronize_session=False)
+        db.session.commit()
+        return True
+    except exc.SQLAlchemyError as e:
+        print(e)
+        db.session.rollback()
+        return None
+
+
+def db_delete_albums(list_of_album_ids):
+    try:
+        albums = Album.query.filter(Album.id.in_(list_of_album_ids))
+        albums.delete(synchronize_session=False)
+        db.session.commit()
+        return True
+    except exc.SQLAlchemyError as e:
+        print(e)
+        db.session.rollback()
+        return None
 
 
 def db_delete_album(album_id):
@@ -206,7 +230,7 @@ def db_get_image_by_user_id(user_id):
 
 def db_get_n_recent_images(n):
     try:
-        image = Image.query.order_by(desc(Image.date_uploaded)).limit(n).all()
+        image = Image.query.filter_by(public=1).order_by(desc(Image.date_uploaded)).limit(n).all()
     except exc.SQLAlchemyError as e:
         return False
     else:

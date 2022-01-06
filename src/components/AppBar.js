@@ -16,13 +16,14 @@ import { useNavigate } from "react-router-dom";
 const renderRightSide = (props) => {
   const onSuccess = (response) => {
     props.login(response.tokenId);
+    console.log(response.tokenId);
   };
 
 
   return props.isAuthenticated() ? (
     <>
       <Button
-        variant="warning"
+        variant="outlined"
         onClick={() => {
           props.logout();
         }}
@@ -39,12 +40,13 @@ const renderRightSide = (props) => {
     <GoogleLogin
       clientId="1084294817544-vcbqovejip9q2drlfaoke9kr6je0akqj.apps.googleusercontent.com"
       render={(renderProps) => (
-        <Button variant="warning" onClick={renderProps.onClick}>
+        <Button variant="outlined" onClick={renderProps.onClick}>
           Login
         </Button>
       )}
       buttonText="Login"
       onSuccess={onSuccess}
+      onFailure={(response) => {console.log(response)}}
       cookiePolicy={"single_host_origin"}
     />
   );
@@ -58,7 +60,7 @@ export const UserAppBar = () => {
   return (
     <>
       <Box sx={{ flexGrow: 1, paddingBottom: 8 * 10 + "px" }}>
-        <AppBar
+        <AppBar          
           position="fixed"
           sx={{
             zIndex: (theme) => theme.zIndex.drawer + 1,

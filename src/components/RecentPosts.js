@@ -9,11 +9,14 @@ import { Info } from "@mui/icons-material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { publicUrl } from "../components/CommonURLs";
+import { CustomImageList } from "./CustomImageList";
 
 export default function RecentPosts() {
   const [currentImages, setCurrentImages] = useState([]);
 
+  const [isLoading, setIsLoading] = useState(false);
   const getRecentImages = () => {
+    setIsLoading(true);
     var config = {
       method: "get",
       url: "/api/image/recent",
@@ -26,12 +29,15 @@ export default function RecentPosts() {
       .then(function (response) {
         if (response.data) {
           setCurrentImages(response.data.images);
+          setIsLoading(false);
         } else {
           setCurrentImages([]);
+          setIsLoading(false);
         }
 
       })
       .catch(function (error) {
+        setIsLoading(false);
         console.log(error);
       });
   };
@@ -40,29 +46,18 @@ export default function RecentPosts() {
     getRecentImages();
   }, []);
 
+  const imageListProps = {
+    currentImages: currentImages,
+    navigateToImage: true,
+    isEditing: false,
+    cols: 6,
+    gaps: 3,
+    isLoading: isLoading,
+  }
+
   return (
     <>
-      <ImageList cols={3} gap={6}>
-        {currentImages.map((image, index) => {
-          return (
-            <Fade
-              in={true}
-              key={image.id}
-              style={{
-                transitionDelay: ((80 * index) ^ 2) + 50 + "ms",
-              }}
-            >
-              <ImageListItem>
-                <img src={publicUrl + image.image} alt={image.caption} loading="lazy" />
-                <ImageListItemBar
-                  title={image.caption ? image.caption : ""}
-                  subtitle={image.user_full_name}
-                />
-              </ImageListItem>
-            </Fade>
-          );
-        })}
-      </ImageList>
+      <CustomImageList {...imageListProps} />
     </>
   );
 }

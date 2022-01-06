@@ -1,21 +1,30 @@
-import { useState } from "react";
-import { ImageList, Fade, ImageListItem, ImageListItemBar } from "@mui/material";
+import { useState, useEffect } from "react";
+import { ImageList, Typography, Fade, ImageListItem, CircularProgress, ImageListItemBar } from "@mui/material";
+import { publicUrl } from "./CommonURLs";
+import { useNavigate } from "react-router-dom";
+import { SendTimeExtensionOutlined } from "@mui/icons-material";
 
 export const CustomImageList = (props) => {
-    const [currentSelectedImages, setCurrentSelectedImages] = useState([]);
+    const currentSelectedImages = props.currentSelectedImages;
+    const setCurrentSelectedImages = props.setCurrentSelectedImages;
+    const navigate = useNavigate();
 
     const renderImage = (image) => {
-        if (currentSelectedImages.includes(image.id)) {
+        const caption = props.isAlbum ? image.title : image.caption
+        if (currentSelectedImages && currentSelectedImages.includes(image.id)) {
             return (
-            <img
-                src={publicUrl + image.image}
-                alt={image.caption}
-                loading="lazy"
-                style={{ border: "solid 2px #1e88e5" }}
-            />
+                <img
+                    src={image.image ? publicUrl + image.image : "https://singlecolorimage.com/get/ffffff/200x200"}
+                    alt={caption}
+                    sx={props.indivSx}
+                    loading="lazy"
+                    style={{ border: "solid 2px #bb86fc" }}
+                />
             );
         } else {
-            return <img src={publicUrl + image.image} alt={image.caption} loading="lazy" />;
+            return (
+                <img src={image.image ? publicUrl + image.image : "https://singlecolorimage.com/get/ffffff/200x200"} alt={caption} sx={props.indivSx} loading="lazy" />
+            );
         }
     };
 
@@ -31,9 +40,28 @@ export const CustomImageList = (props) => {
         }
     };
 
+    const renderImageCaption = (image) => {
+        if (props.isAlbum) {
+            return <ImageListItemBar title={image.title} style={ props.captionFullHeight && {height: "100%" } } />
+        }else if (image.caption) {
+            return <ImageListItemBar title={image.caption} style={ props.captionFullHeight && {height: "100%" } } />
+        }
+    }
+
+    const message = () => {
+        if (props.isAlbum) {
+            return "There are no albums to display."
+        }else{
+            return "There are no images to display."
+        }
+    }
+
     return (
-        <ImageList cols={6} gap={0} sx={{ height: 575 }}>
-            {props.currentImages.map((image, index) => {
+        <>
+        {props.currentImages && !props.isLoading && props.currentImages.length < 1 && <Typography variant="body2">{message()}</Typography>} 
+        { props.isLoading && <CircularProgress />}
+        <ImageList cols={props.cols ? props.cols : 6} gap={props.gaps ? props.gaps : 0} sx={props.sx}>
+            {props.currentImages && props.currentImages.map((image, index) => {
                 return (
                 <Fade
                     in={true}
@@ -44,20 +72,26 @@ export const CustomImageList = (props) => {
                 >
                     <ImageListItem
                     onClick={(e) => {
-                        if (isEditing) {
+                        if (props.isEditing) {
                             handleClick(image.id);
                         }else{
-                            props.onClick();
+                            if (props.navigateToImage) {
+                                navigate("/image/" + image.image); 
+                            } else if (props.isAlbum) {
+                                props.handleAlbum(image);
+                            }
                         }
                     }}
                     style={{ cursor: "pointer"}}
                     >
-                    {renderImage(image)}
-                    {image.caption && <ImageListItemBar title={image.caption} />}
+                        {renderImage(image)}
+                        {renderImageCaption(image)}
                     </ImageListItem>
                 </Fade>
                 );
             })}
+            { props.children }
         </ImageList>
+        </>
     )
 }

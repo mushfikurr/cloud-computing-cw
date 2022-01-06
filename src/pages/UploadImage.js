@@ -12,7 +12,9 @@ import {
   Card,
   CardContent,
   CardHeader,
+  Stack,
   Grid,
+  Checkbox,
   Paper,
 } from "@mui/material";
 import axios from "axios";
@@ -26,6 +28,8 @@ import { useDropzone } from "react-dropzone";
 import { grey } from "@mui/material/colors";
 import AppBarNavBar from "../components/AppBarNavBar";
 import PageTemplate from "./PageTemplate";
+import { Label } from "@mui/icons-material";
+import { useTheme } from "@mui/styles";
 
 const ImageUploadDropzone = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -34,6 +38,8 @@ const ImageUploadDropzone = () => {
   const [successfulImage, setSuccessfulImage] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [copied, copy] = useCopyToClipboard("");
+  const [isPublic, setIsPublic] = useState(true);
+  const theme = useTheme();
 
   const onSuccess = (img_hash) => {
     setSuccessfulImage({ hash: img_hash, img: currentFile });
@@ -51,6 +57,7 @@ const ImageUploadDropzone = () => {
     var formData = new FormData();
     formData.append("image", currentFile);
     formData.append("caption", currentCaption);
+    formData.append("public", isPublic ? 1 : 0);
     setIsLoading(true);
     axios({
       method: "post",
@@ -91,9 +98,11 @@ const ImageUploadDropzone = () => {
         );
       } else {
         return (
+          <>
           <Typography variant="h7">
             Drop image here or click to browse.
           </Typography>
+          </>
         );
       }
     }
@@ -105,7 +114,7 @@ const ImageUploadDropzone = () => {
         style={{ height: "250px" }}
         sx={{
           border: "1px dashed grey",
-          backgroundColor: isDragActive ? grey[100] : "",
+          backgroundColor: isDragActive ? grey[800] : "",
         }}
         {...getRootProps()}
       >
@@ -136,6 +145,7 @@ const ImageUploadDropzone = () => {
   const renderSuccessfulImagePreview = () => {
     if (successfulImage) {
       return (
+        <>
         <Paper variant="outlined" sx={{ padding: "12px" }}>
           <Grid container alignItems="center" justifyContent="space-between">
             <Grid item>
@@ -166,9 +176,18 @@ const ImageUploadDropzone = () => {
             </Grid>
           </Grid>
         </Paper>
+        </>
       );
     }
   };
+
+  const toggleCheckbox = () => {
+    if (isPublic) { 
+      setIsPublic(false);
+    }else{
+      setIsPublic(true);
+    }
+  }
 
   const renderFilePreview = () => {
     if (currentFile) {
@@ -179,26 +198,29 @@ const ImageUploadDropzone = () => {
               <Typography variant="body2">{currentFile.path}</Typography>
             </Grid>
             <Grid item>
-              <LoadingButton
-                loading={isLoading}
-                onClick={() => {
-                  setCurrentFile();
-                }}
-                disableElevation
-              >
-                Clear
-              </LoadingButton>
-              <LoadingButton
-                loading={isLoading}
-                onClick={() => {
-                  uploadFile();
-                }}
-                variant="contained"
-                disableElevation
-                style={{ marginLeft: "4px" }}
-              >
-                Upload
-              </LoadingButton>
+              <Stack direction="row" alignItems="center">
+                <Typography sx={{marginTop: "1px"}} variant="body2">Make public?</Typography><Checkbox sx={{marginRight: "4px"}}checked={isPublic} onChange={toggleCheckbox} />
+                <LoadingButton
+                  loading={isLoading}
+                  onClick={() => {
+                    setCurrentFile();
+                  }}
+                  disableElevation
+                >
+                  Clear
+                </LoadingButton>
+                <LoadingButton
+                  loading={isLoading}
+                  onClick={() => {
+                    uploadFile();
+                  }}
+                  variant="contained"
+                  disableElevation
+                  style={{ marginLeft: "4px" }}
+                >
+                  Upload
+                </LoadingButton>
+              </Stack>
             </Grid>
           </Grid>
         </Paper>
@@ -211,6 +233,7 @@ const ImageUploadDropzone = () => {
       {/* <Typography variant="h4" style={{ marginBottom: "16px" }}>
         Upload an image
       </Typography> */}
+      <Typography variant="h4" sx={{marginBottom: "8px"}}>Upload an image</Typography>
       <Card>
         <CardContent>
           <Grid

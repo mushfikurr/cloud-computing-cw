@@ -21,17 +21,18 @@ from google.cloud import storage
 app = Flask(__name__, static_folder="build", static_url_path="/")
 app.config.update(
     DEBUG=True,
-    SECRET_KEY=os.environ.get("FN_FLASK_SECRET_KEY"),
+    SECRET_KEY="FARTSSADASDASDASDASDASDASDASD",
     SESSION_COOKIE_HTTPONLY=True,
     REMEMBER_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="Strict",
-    SQLALCHEMY_DATABASE_URI="mysql+pymysql://root:ZaidBen123@localhost:3306/image_sharing_db"
+    SQLALCHEMY_DATABASE_URI="mysql+pymysql://root:ZaidBen123@/image_sharing_db?unix_socket=/cloudsql/imagehosting-331720:europe-west1:image-sharing-db"
 )
 
 cors = CORS(app)
 db = SQLAlchemy(app)
 
-from api.query import db_add_image, db_add_user, db_add_image, db_get_all_images_from_album, db_get_n_recent_images, db_get_image_by_user_id, db_get_user_by_id, db_get_user_by_sub, db_add_user_without_family, db_get_image_by_hash, db_new_album_multiple_images, db_get_albums_by_user_id, db_get_first_image_from_album
+from query import db_add_image, db_delete_albums, db_add_user, db_add_image, db_delete_images, db_get_all_images_from_album, db_get_n_recent_images, db_get_image_by_user_id, db_get_user_by_id, db_get_user_by_sub, db_add_user_without_family, db_get_image_by_hash, db_new_album_multiple_images, db_get_albums_by_user_id, db_get_first_image_from_album
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.session_protection = "strong"
@@ -100,9 +101,12 @@ def upload_image():
     """Process the uploaded file and upload it to Google Cloud Storage."""
     uploaded_file = request.files.get('image')
     uploaded_caption = request.form.get('caption')
+    public = request.form.get('public')
 
     if not uploaded_file:
         return 'No file uploaded.', 400
+    if not public:
+        return 'Not specified whether public or private.', 400
 
     # Create a Cloud Storage client.
     _, extension = os.path.splitext(uploaded_file.filename)
@@ -112,7 +116,8 @@ def upload_image():
     gcs = storage.Client()
 
     # Get the bucket that the file will be uploaded to.
-    bucket = gcs.get_bucket(os.environ.get("GOOGLE_CLOUD_STORAGE_BUCKET"))
+
+    bucket = gcs.get_bucket("imagehosting-331720.appspot.com")
 
     # Create a new blob and upload the file's content.
     blob = bucket.blob(filename)
@@ -124,7 +129,7 @@ def upload_image():
     blob.make_public()
 
     db_resp = db_add_image(current_user.id, filename,
-                           datetime.datetime.now(), uploaded_caption)
+                           datetime.datetime.now(), uploaded_caption, public)
     if db_resp:
         return {"success": "Successfully uploaded image", "img_hash": filename}
     else:
@@ -134,7 +139,6 @@ def upload_image():
 @app.route("/api/image/recent")
 def recent_images():
     query = db_get_n_recent_images(9)
-    print(query)
     def full_name(user): return user.given_name + " " + user.family_name
 
     if query:
@@ -157,6 +161,34 @@ def image_by_hash():
         return {"error": "No hash provided"}, 400
 
 
+@app.route("/api/image/delete", methods=["POST"])
+def delete_image():
+    print(request.form.get('images'))
+    if request.form.get('images') is not None:
+        img = db_delete_images(request.form.get('images').split(","))
+
+        if img:
+            return {"image": "Successfully deleted."}
+        else:
+            return {"error": "Failed to retrieve image "}, 401
+    else:
+        return {"error": "No image id provided"}, 400
+
+
+@app.route("/api/album/delete", methods=["POST"])
+def delete_album():
+    print(request.form.get('album'))
+    if request.form.get('albums') is not None:
+        img = db_delete_albums(request.form.get('albums').split(","))
+
+        if img:
+            return {"album": "Successfully deleted."}
+        else:
+            return {"error": "Failed to retrieve image "}, 401
+    else:
+        return {"error": "No album id provided"}, 400
+
+
 @app.route("/api/image/user")
 @login_required
 def current_user_images():
@@ -173,11 +205,26 @@ def current_user_images():
 def preview_album():
     query = db_get_albums_by_user_id(current_user.id)
 
-    def get_preview_image(album_id):
-        return db_get_first_image_from_album(album_id).image
-
     if query is not None:
-        return {"albums": [{**album.as_dict(), **{"preview_img": get_preview_image(album.id)}} for album in query]}
+        def get_preview_image(album_id):
+            get_image = db_get_first_image_from_album(album_id)
+            if get_image is None:
+                return None
+            else:
+                return get_image.image
+
+        albums = []
+        for album in query:
+            preview_img = get_preview_image(album.id)
+
+            if preview_img is not None:
+                albums.append(
+                    {**album.as_dict(), **{"image": get_preview_image(album.id)}})
+            else:
+                albums = []
+                albums.append(album.as_dict())
+        return {"albums": albums}
+                     
     else:
         return {"error": "Failed to retrieve albums"}, 403
 
@@ -215,3 +262,12 @@ def create_album():
 def logout():
     logout_user()
     return jsonify({"logout": True})
+
+
+@app.errorhandler(404)
+def not_found(e):
+    return app.send_static_file('index.html')
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(8080))

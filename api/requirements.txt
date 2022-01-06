@@ -12,4 +12,5 @@ google-auth
 flask-cors
 PyMySQL
 google-cloud-storage
+Flask-Login
 boto3==1.17.87

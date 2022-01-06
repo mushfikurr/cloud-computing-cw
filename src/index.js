@@ -5,29 +5,40 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { UserProvider } from "./utils/UserProvider";
 import { ThemeProvider } from "@emotion/react";
-import { createTheme } from "@mui/material";
+import { createTheme, CssBaseline } from "@mui/material";
 import { SnackbarProvider } from "notistack";
 
-const theme = createTheme();
+const theme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      500: "#bb86fc",
+      main: "#bb86fc",
+      contrastDefaultColour: "dark",
+    },
+  }
+});
 
 ReactDOM.render(
-  <ThemeProvider theme={theme}>
-    <React.StrictMode>
-      <SnackbarProvider
-          maxSnack={3}
-          iconVariant={{
-            success: "✅",
-            error: "✖️",
-            warning: "⚠️",
-            info: "ℹ️",
-          }}
-        >
-        <UserProvider>
-          <App />
-        </UserProvider>
-      </SnackbarProvider>
-    </React.StrictMode>
-  </ThemeProvider>,
+  <React.StrictMode>
+    <ThemeProvider theme={theme}>
+        <SnackbarProvider
+            maxSnack={3}
+            iconVariant={{
+              success: "✅",
+              error: "✖️",
+              warning: "⚠️",
+              info: "ℹ️",
+            }}
+          >
+          <UserProvider>
+            <CssBaseline />
+            <App />
+          </UserProvider>
+        </SnackbarProvider>
+      
+    </ThemeProvider>
+  </React.StrictMode>,
   document.getElementById("root")
 );
 

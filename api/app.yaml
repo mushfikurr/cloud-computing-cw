@@ -1,12 +1,16 @@
 runtime: python38
 
 handlers:
-  - url: /
-    static_files: build/index.html
-    upload: build/index.html
-  - url: /static
-    static_dir: build/static/
   - url: /(.*)
     script: auto
+  - url: /static
+    static_dir: build/static/
+  - url: .*
+    static_files: build/index.html
+    upload: build/index.html
+
+beta_settings:
+      cloud_sql_instances: /cloudsql/imagehosting-331720:europe-west1:image-sharing-db
+
 
 entrypoint: gunicorn -b :8080 -w 2 main:app

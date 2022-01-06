@@ -102,7 +102,6 @@ const menuItems = [
   { title: "Profile", icon: <PersonIcon />, link: "/profile" },
   { title: "Upload", icon: <UploadIcon />, link: "/upload" },
   { title: "Create album", icon: <CollectionsIcon />, link: "/album" },
-  { title: "Shared with me", icon: <InboxIcon />, link: "/" },
 ];
 
 export default function AppBarNavBar() {
@@ -116,6 +115,10 @@ export default function AppBarNavBar() {
     history(title.link);
   };
 
+  const handleLinkChange = (link) => {
+    history(link);
+  };
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -127,29 +130,29 @@ export default function AppBarNavBar() {
   const renderRightSide = (props) => {
     const onSuccess = (response) => {
       props.login(response.tokenId);
+      console.log(response.tokenId);
     };
 
     return props.isAuthenticated() ? (
       <>
         <Button
-          variant="warning"
+          style={{marginRight: "6px"}}
+          variant="outlined"
           onClick={() => {
             props.logout();
           }}
         >
           Logout
         </Button>
-        <Tooltip title="Open settings">
-          <IconButton>
-            <Avatar alt={props.fullName} src={props.picture} />
-          </IconButton>
-        </Tooltip>
+        <IconButton onClick={() => { handleLinkChange("/profile") }}>
+          <Avatar alt={props.fullName} src={props.picture} />
+        </IconButton>
       </>
     ) : (
       <GoogleLogin
         clientId="1084294817544-vcbqovejip9q2drlfaoke9kr6je0akqj.apps.googleusercontent.com"
         render={(renderProps) => (
-          <Button variant="warning" onClick={renderProps.onClick}>
+          <Button variant="outlined" onClick={renderProps.onClick}>
             Login
           </Button>
         )}
@@ -162,7 +165,6 @@ export default function AppBarNavBar() {
 
   return (
     <Box sx={{ display: "flex" }}>
-      <CssBaseline />
       <Box sx={{ flexGrow: 1, paddingBottom: 8 * 10 + "px" }}>
         <AppBar position="fixed" open={open}>
           <Toolbar>
@@ -176,7 +178,7 @@ export default function AppBarNavBar() {
                 ...(open && { display: "none" }),
               }}
             >
-              <MenuIcon />
+              <MenuIcon sx={{color: "#bb86fc"}} />
             </IconButton>
             <Typography
               variant="h6"
@@ -203,9 +205,9 @@ export default function AppBarNavBar() {
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
-              <ChevronRightIcon />
+              <ChevronRightIcon sx={{color: "#bb86fc"}} />
             ) : (
-              <ChevronLeftIcon />
+              <ChevronLeftIcon sx={{color: "#bb86fc"}} />
             )}
           </IconButton>
         </DrawerHeader>
@@ -218,7 +220,7 @@ export default function AppBarNavBar() {
                 button
                 key={text.title}
               >
-                <ListItemIcon>{text.icon}</ListItemIcon>
+                <ListItemIcon sx={{color: "#bb86fc"}}>{text.icon}</ListItemIcon>
                 <ListItemText primary={text.title} />
               </ListItem>
             );

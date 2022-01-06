@@ -20,6 +20,7 @@ import { grey } from "@mui/material/colors";
 import AppBarNavBar from "../components/AppBarNavBar";
 import PageTemplate from "./PageTemplate";
 
+
 export default function Home() {
   const { isAuthenticated, currentUser, isLoading } = useContext(UserContext);
 
@@ -52,7 +53,8 @@ export default function Home() {
       <Container>
         <Collapse in={isAlertOpen}>
           <Alert
-            severity="info"
+           style={{ backgroundColor: grey[900]}}
+           severity="info"
             action={
               <IconButton
                 aria-label="close"
